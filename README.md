@@ -57,3 +57,7 @@ L'application utilise une esthétique radicale :
 * **API :** GitHub REST API v3
 * **Font :** Google Fonts (Space Mono)
 * [APK](https://appilix.com/account/)
+
+
+# A implementer:
+* La creation de smart tags en analysant les repo stars
