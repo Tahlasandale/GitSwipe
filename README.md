@@ -61,3 +61,4 @@ L'application utilise une esthétique radicale :
 
 # A implementer:
 * La creation de smart tags en analysant les repo stars
+* Boutton settings
