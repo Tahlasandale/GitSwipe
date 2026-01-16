@@ -1,41 +1,76 @@
-# ⚡ GitSwipe
+# ⚡ GitSwipe - Ultimate.bin
 
-**GitSwipe** est une interface exploratoire au style **néo-brutaliste** permettant de découvrir les pépites de GitHub avec l'ergonomie d'une application de rencontre. Swippez, découvrez, et archivez les dépôts les plus "trending" du moment.
+> **Découvrez du code. Swipez pour Star. Discutez avec l'IA.**
+>
+> Une interface brutale et efficace pour explorer l'univers GitHub.
 
----
-
-## 🛠️ Fonctionnalités
-
-* **Stream de découverte :** Accès direct aux dépôts les plus étoilés créés au cours des 30 derniers jours.
-* **Interface Swipe :** * **Swipe Droite (ou bouton ❤️) :** Ajoute le dépôt à votre Vault (coffre-fort).
-    * **Swipe Gauche (ou bouton ✘) :** Ignore le dépôt et passe au suivant.
-* **Système de Vault :** Visualisez vos dépôts sauvegardés. Fonctionne en mode local (localStorage) ou synchronisé avec votre compte GitHub.
-* **Aperçu README :** Rendu Markdown en temps réel directement sur la carte pour comprendre un projet sans quitter l'app.
-* **Bouton Undo :** Permet d'annuler le dernier swipe en cas d'erreur de manipulation.
-* **Connexion GitHub :** Intégrez un Token (PAT) pour starrer réellement les dépôts sur votre profil GitHub depuis l'interface.
+GitSwipe transforme la découverte de dépôts GitHub en une expérience fluide et addictive. Ne perdez plus de temps dans des listes interminables : **une carte, un choix.**
 
 ---
 
-## 🚀 Installation & Lancement
+## 💾 Fonctionnalités Principales
 
-Le projet est "Self-contained" : un seul fichier HTML regroupe toute la logique, le style et les assets.
+### 1. 👆 Mécanique de Swipe
+* **Droite (Green) :** Ajoute une Star ⭐ au dépôt (Sync GitHub ou Local).
+* **Gauche (Red) :** Ignore et passe au suivant.
+* **Undo :** Une erreur ? Revenez en arrière.
 
-1.  Clonez le dépôt :
-    ```bash
-    git clone [https://github.com/votre-username/gitswipe.git](https://github.com/votre-username/gitswipe.git)
-    ```
-2.  Ouvrez `index.html` dans n'importe quel navigateur moderne.
-3.  (Optionnel) Configurez votre Token GitHub via l'icône ⚙️ pour dépasser les limites de l'API (60 requêtes/heure).
+### 2. 🧠 Repo Analyzer (Powered by Gemini)
+Ne lisez plus le code seul. Ouvrez le chat intégré pour discuter directement avec le code source du dépôt.
+* L'IA scanne l'arborescence et lit les fichiers clés.
+* Posez des questions techniques (*"Comment fonctionne l'auth ?", "Explique ce fichier Python"*).
+* Réponses formatées en Markdown.
+
+### 3. 🎲 Modes de Découverte
+* **Trending :** Les dépôts les plus populaires du dernier mois.
+* **Random Chaos :** Exploration aléatoire basée sur vos tags préférés (Rust, AI, CLI, Ricing...).
+* **Search.exe :** Recherche précise par mots-clés ou dépôt spécifique (`user/repo`).
+
+### 4. 🗄️ Le Coffre (Vault)
+Visualisez vos dépôts favoris.
+* Fonctionne en mode **Local** (sans compte GitHub) ou **Sync** (avec Token).
+* L'IA peut analyser vos stars pour générer automatiquement de nouveaux tags d'intérêt ("Chaos Matrix").
 
 ---
 
-## ⚙️ Configuration du Token GitHub
+## 🚀 Installation & Utilisation
 
-Pour une expérience optimale :
-1.  Créez un **Personal Access Token (classic)** sur GitHub.
-2.  Attribuez-lui le scope `public_repo`.
-3.  Collez le token dans le menu **System_Config** de l'application.
-> **Note :** Votre token est stocké uniquement dans votre `localStorage` navigateur. Aucun serveur tiers n'y a accès.
+Ce projet est conçu pour être ultra-portable (**Single File Application**).
+
+### Prérequis
+Un navigateur web moderne (Chrome, Firefox, Edge, Safari) ou un smartphone Android.
+
+---
+
+## ⚙️ Configuration (Config.sys)
+
+Pour débloquer toute la puissance de GitSwipe, cliquez sur l'icône **Settings** en haut à droite.
+
+| Paramètre | Description | Requis pour... |
+| :--- | :--- | :--- |
+| **GitHub Token** | Token d'accès personnel (Classic). | Synchroniser les Stars avec votre compte GitHub réel et augmenter les limites de l'API (Rate Limit). |
+| **Gemini API Key** | Clé API Google AI Studio. | Utiliser le Chat (Repo Analyzer) et la génération automatique de tags. |
+
+> **Note de sécurité :** Vos clés sont stockées uniquement dans le `localStorage` de votre navigateur. Elles ne sont jamais envoyées vers un serveur tiers autre que les APIs officielles (GitHub et Google).
+
+---
+
+## 🛠️ Stack Technique
+
+* **Frontend :** HTML5 natif.
+* **Style :** Tailwind CSS (via CDN).
+* **Scripting :** Vanilla JavaScript (ES6+).
+* **Rendu Markdown :** Marked.js.
+* **Syntax Highlighting :** Highlight.js.
+* **Polices :** Space Mono (Google Fonts).
+
+---
+
+## ⌨️ Raccourcis / Astuces
+
+* **Navigation Tactile :** L'interface est optimisée pour le mobile. Swipez avec le pouce.
+* **Recherche avancée :** Vous pouvez taper `language:rust` ou `topic:react` dans la barre de recherche.
+* **Tags IA :** Dans le menu "Chaos Matrix", cliquez sur `AI_SCAN_FAVORITES` pour que Gemini analyse vos goûts et suggère des tags de recherche.
 
 ---
 
