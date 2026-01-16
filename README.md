@@ -93,8 +93,3 @@ L'application utilise une esthétique radicale :
 * **Font :** Google Fonts (Space Mono)
 * [APK](https://appilix.com/account/)
 
-
-# A implementer:
-* La creation de smart tags en analysant les repo stars
-* Boutton settings
-* MAJ readme
