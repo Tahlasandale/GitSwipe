@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>GitSwipe - Ultimate.bin</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -11,7 +11,7 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap');
         
-        body { font-family: 'Space Mono', monospace; overflow: hidden; background-color: white; color: black; }
+        body { font-family: 'Space Mono', monospace; overflow: hidden; background-color: white; color: black; touch-action: pan-y; }
         
         .custom-scrollbar::-webkit-scrollbar { width: 10px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: white; border-left: 4px solid black; }
@@ -26,7 +26,23 @@
         .markdown-body pre code { background: transparent; color: inherit; padding: 0; font-weight: normal; }
         .markdown-body ul { list-style: square; padding-left: 1.5rem; }
         
-        .active-card { z-index: 10; transition: transform 0.2s cubic-bezier(0.19, 1, 0.22, 1); will-change: transform; }
+        /* Anti-Drag & Select Fixes */
+        img, a, .no-select {
+            -webkit-user-drag: none;
+            -khtml-user-drag: none;
+            -moz-user-drag: none;
+            -o-user-drag: none;
+            user-drag: none;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .active-card { 
+            z-index: 10; 
+            transition: transform 0.2s cubic-bezier(0.19, 1, 0.22, 1); 
+            will-change: transform; 
+            cursor: grab;
+        }
         .active-card:active { cursor: grabbing; }
 
         @keyframes slideIn {
@@ -67,9 +83,8 @@
                 <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M21 8H3V6a2 2 0 012-2h14a2 2 0 012 2v2zM21 8v10a2 2 0 01-2 2H5a2 2 0 01-2-2V8h18zM12 12v4M10 12h4"/></svg>
             </button>
             <button id="btn-config" title="Configuration" class="bg-white text-black border-2 border-white p-2 hover:bg-[#00FF00] transition-colors">
-                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
-                    <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2-.3l-.18-.18a2 2 0 0 0-2.83 0l-.31.31a2 2 0 0 0 0 2.83l.18.18a2 2 0 0 1 .3 2L3.2 11a2 2 0 0 1-1.73 1H1a2 2 0 0 0-2 2v.44a2 2 0 0 0 2 2h.18a2 2 0 0 1 1.73 1l.25.43a2 2 0 0 1-.3 2l-.18.18a2 2 0 0 0 0 2.83l.31.31a2 2 0 0 0 2.83 0l.18-.18a2 2 0 0 1 2 .3l.43.25a2 2 0 0 1 1 1.73V22a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 .3l.18.18a2 2 0 0 0 2.83 0l.31-.31a2 2 0 0 0-2.83l-.18-.18a2 2 0 0 1-.3-2l.25-.43a2 2 0 0 1 1.73-1H22a2 2 0 0 0 2-2v-.44a2 2 0 0 0-2-2h-.18a2 2 0 0 1-1-1.73-1l-.25-.43a2 2 0 0 1 .3-2l.18-.18a2 2 0 0 0 0-2.83l-.31-.31a2 2 0 0 0-2.83 0l-.18.18a2 2 0 0 1-2-.3l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
-                    <circle cx="12" cy="12" r="3"/>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="square" stroke-linejoin="miter">
+                    <path d="M4 21v-7"></path><path d="M4 10V3"></path><path d="M12 21v-9"></path><path d="M12 8V3"></path><path d="M20 21v-5"></path><path d="M20 12V3"></path><path d="M1 14h6"></path><path d="M9 8h6"></path><path d="M17 16h6"></path>
                 </svg>
             </button>
         </nav>
@@ -153,15 +168,20 @@
 
     <!-- Tags Editor Modal -->
     <div id="tags-modal" class="hidden fixed inset-0 z-[110] flex items-center justify-center bg-black/90 backdrop-blur-sm p-4">
-        <div class="bg-white border-4 border-black p-8 max-w-md w-full shadow-[15px_15px_0px_0px_rgba(0,255,0,1)] flex flex-col h-[500px]">
+        <div class="bg-white border-4 border-black p-8 max-w-md w-full shadow-[15px_15px_0px_0px_rgba(0,255,0,1)] flex flex-col h-[600px]">
             <h3 class="font-black text-2xl uppercase mb-6 italic underline decoration-[#00FF00]">Chaos_Matrix</h3>
             <p class="text-[10px] font-bold mb-4 text-black/60 leading-relaxed uppercase">
-                Ajoutez ou supprimez les mots-clés utilisés par le mode "Random".
+                Gérez vos tags ou générez-les avec l'IA.
             </p>
             
+            <button id="ai-tags-btn" class="w-full mb-6 bg-black text-[#00FF00] border-4 border-black py-3 font-black uppercase text-xs shadow-[3px_3px_0px_0px_rgba(0,0,0,0.5)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all flex items-center justify-center gap-2">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10H12V2z"/><path d="M12 2a10 10 0 0 1 10 10"/><path d="M12 22a10 10 0 0 1-10-10"/></svg>
+                AI_Scan_Favorites
+            </button>
+
             <div class="flex gap-2 mb-4">
                 <input id="new-tag-input" type="text" placeholder="New tag (ex: docker)..." class="flex-1 p-2 border-4 border-black font-bold text-xs focus:outline-none focus:bg-indigo-50">
-                <button id="add-tag-btn" class="bg-black text-[#00FF00] px-4 py-2 font-black uppercase text-xs border-4 border-black hover:bg-[#00FF00] hover:text-black">ADD</button>
+                <button id="add-tag-btn" class="bg-white text-black px-4 py-2 font-black uppercase text-xs border-4 border-black hover:bg-[#00FF00]">ADD</button>
             </div>
 
             <div id="tags-list" class="flex-1 overflow-y-auto border-4 border-black p-4 bg-[#f4f4f4] flex flex-wrap content-start gap-2 custom-scrollbar mb-4">
@@ -169,7 +189,7 @@
             </div>
 
             <div class="flex gap-3 shrink-0">
-                <button id="reset-tags" class="flex-1 bg-white border-4 border-black py-2 font-black uppercase text-[10px] text-red-600 hover:bg-red-50">Reset_Defaults</button>
+                <button id="reset-tags" class="flex-1 bg-white border-4 border-black py-2 font-black uppercase text-[10px] text-red-600 hover:bg-red-50">Reset</button>
                 <button id="close-tags" class="flex-1 bg-black text-white py-3 font-black uppercase text-xs">Save & Exit</button>
             </div>
         </div>
@@ -179,23 +199,25 @@
     <div id="config-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-sm p-4">
         <div class="bg-white border-4 border-black p-8 max-w-md w-full shadow-[15px_15px_0px_0px_rgba(0,255,0,1)] relative">
             
-            <!-- Bouton pour ouvrir l'éditeur de tags -->
-            <button id="open-tags-btn" class="absolute top-8 right-8 border-2 border-black bg-white p-2 hover:bg-[#00FF00] shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:shadow-none transition-all" title="Edit Random Tags">
-                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
-            </button>
-
-            <h3 class="font-black text-2xl uppercase mb-6 italic underline decoration-[#00FF00]">Config.sys</h3>
+            <div class="flex justify-between items-center mb-6 border-b-4 border-[#00FF00] pb-2">
+                <h3 class="font-black text-2xl uppercase italic">Config.sys</h3>
+                
+                <!-- Bouton pour ouvrir l'éditeur de tags (Intégré dans le header de la modal) -->
+                <button id="open-tags-btn" class="border-2 border-black bg-white p-2 hover:bg-[#00FF00] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:shadow-none transition-all" title="Edit Random Tags">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+                </button>
+            </div>
             
             <div class="mb-6">
                 <label class="block text-[10px] font-black uppercase mb-2">GitHub Token (Classic)</label>
                 <input id="gh-token-input" type="password" placeholder="ghp_XXXXXXXXXXXXXXXXXXXX" class="w-full p-3 border-4 border-black text-sm focus:outline-none focus:bg-indigo-50 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-                <p class="text-[9px] text-gray-500 mt-1">Requis pour Starrer et charger le code (Rate Limit)</p>
+                <p class="text-[9px] text-gray-500 mt-1">Requis pour Starrer et charger le code (Rate Limit). <a href="https://github.com/settings/tokens" target="_blank" class="underline hover:text-[#00FF00]">Obtenir un token</a>.</p>
             </div>
 
             <div class="mb-8">
                 <label class="block text-[10px] font-black uppercase mb-2">Gemini API Key</label>
                 <input id="gemini-key-input" type="password" placeholder="AIzaSy..." class="w-full p-3 border-4 border-black text-sm focus:outline-none focus:bg-indigo-50 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-                <p class="text-[9px] text-gray-500 mt-1">Requise pour le chat avec le code. <a href="https://aistudio.google.com/app/apikey" target="_blank" class="underline hover:text-[#00FF00]">Obtenir une clé</a>.</p>
+                <p class="text-[9px] text-gray-500 mt-1">Requise pour le chat et l'analyse AI. <a href="https://aistudio.google.com/app/apikey" target="_blank" class="underline hover:text-[#00FF00]">Obtenir une clé</a>.</p>
             </div>
 
             <div class="flex flex-col gap-3">
@@ -223,9 +245,14 @@
         let currentRepoContext = ""; // For Chat
         let chatHistory = []; // For Chat
 
-        // Default & Loaded Tags
+        // Default & Loaded Tags (Safe Load)
         const defaultTags = ['web', 'tool', 'game', 'ai', 'cli', 'minimal', 'automation', 'ricing', 'tui', 'chat', 'distro', 'xfce', 'window manager', 'hyprland', 'dotfiles', 'programming language'];
-        let chaosTags = JSON.parse(localStorage.getItem('gs_chaos_tags') || JSON.stringify(defaultTags));
+        let chaosTags = [];
+        try {
+            chaosTags = JSON.parse(localStorage.getItem('gs_chaos_tags')) || defaultTags;
+        } catch (e) {
+            chaosTags = defaultTags;
+        }
 
         // UI Ref
         const cardContainer = document.getElementById('card-container');
@@ -257,14 +284,14 @@
             return { q: `created:>${date.toISOString().split('T')[0]} stars:>100`, sort: 'stars' };
         };
 
-        const fetchGithub = async (url, method = 'GET', isHtml = false) => {
+        // --- Main Functions ---
+        async function fetchGithub(url, method = 'GET', isHtml = false) {
             const headers = isHtml ? { 'Accept': 'application/vnd.github.html' } : {};
             if (ghToken) headers['Authorization'] = `token ${ghToken}`;
             return await fetch(url, { method, headers });
-        };
+        }
 
-        // --- Core Logic ---
-        const fetchTrendingRepos = async (reset = false) => {
+        async function fetchTrendingRepos(reset = false) {
             if (isLoading && !reset) return;
             if (reset) {
                 repos = []; currentIndex = 0; page = 1;
@@ -282,17 +309,15 @@
                 renderCurrentCard();
             } catch (err) { showToast(err.message === "LIMIT" ? "API LIMIT" : "ERROR", "bg-red-600"); } 
             finally { isLoading = false; }
-        };
+        }
 
-        const executeSearch = async (rawQuery) => {
+        async function executeSearch(rawQuery) {
             searchModal.classList.add('hidden');
             mode = 'search';
             repos = []; currentIndex = 0;
             updateNavStyles(btnSearch);
             viewDiscover.classList.remove('hidden'); viewVault.classList.add('hidden');
-            
             cardContainer.innerHTML = `<div class="flex flex-col items-center justify-center h-full gap-4"><div class="w-12 h-12 border-4 border-black border-t-[#00FF00] animate-spin"></div><p class="font-black uppercase text-[10px] tracking-widest italic">Deep_Scanning...</p></div>`;
-            
             try {
                 if (rawQuery.includes('/') && !rawQuery.includes(' ')) {
                     const res = await fetchGithub(`https://api.github.com/repos/${rawQuery}`);
@@ -319,18 +344,18 @@
                 showToast(err.message === "NO_RESULTS" ? "NO REPOS FOUND" : "SEARCH ERROR", "bg-red-600");
                 cardContainer.innerHTML = `<div class="flex flex-col items-center justify-center h-full gap-4"><p class="font-black uppercase text-xl">404</p><p class="text-xs uppercase">No Results Found</p></div>`;
             }
-        };
+        }
 
-        const fetchUserStars = async (silent = false) => {
+        async function fetchUserStars(silent = false) {
             if (!ghToken) { renderVaultList(localVault); return; }
             if (!silent) vaultRefreshIndicator.classList.remove('hidden');
             try {
                 const res = await fetchGithub(`https://api.github.com/user/starred?per_page=100`);
                 if (res.ok) { remoteStars = await res.json(); renderVaultList(remoteStars); }
             } catch (e) {} finally { if (!silent) vaultRefreshIndicator.classList.add('hidden'); }
-        };
+        }
 
-        const toggleStar = async (repo, action = 'star') => {
+        async function toggleStar(repo, action = 'star') {
             if (!ghToken) {
                 if (action === 'star') { if (!localVault.find(r => r.id === repo.id)) localVault.unshift(repo); }
                 else { localVault = localVault.filter(r => r.id !== repo.id); }
@@ -344,9 +369,9 @@
                 if (res.status === 204) { await fetchUserStars(true); return true; }
             } catch (e) { showToast("SYNC_FAILED", "bg-red-500"); }
             return false;
-        };
+        }
 
-        const fetchReadme = async (repo) => {
+        async function fetchReadme(repo) {
             if (readmeCache[repo.id] || fetchingIds.has(repo.id)) return;
             fetchingIds.add(repo.id);
             try {
@@ -358,10 +383,81 @@
                 }
             } catch (e) { readmeCache[repo.id] = `<div class="p-10 border-4 border-dashed border-black text-center opacity-30 font-black text-xs">DOCS_NOT_FOUND</div>`; } 
             finally { fetchingIds.delete(repo.id); }
+        }
+
+        // --- TAGS MANAGEMENT ---
+        const renderTags = () => {
+            const list = document.getElementById('tags-list');
+            list.innerHTML = chaosTags.map(tag => `
+                <div class="inline-flex items-center bg-black text-[#00FF00] px-3 py-1 border-2 border-black text-[10px] font-bold uppercase gap-2">
+                    <span>${tag}</span>
+                    <button onclick="removeTag('${tag}')" class="hover:text-white">x</button>
+                </div>
+            `).join('');
         };
 
-        // --- ANALYZER / CHAT LOGIC ---
-        const openAnalyzer = async (repoId) => {
+        window.removeTag = (tag) => {
+            chaosTags = chaosTags.filter(t => t !== tag);
+            renderTags();
+        };
+
+        document.getElementById('open-tags-btn').onclick = () => {
+            configModal.classList.add('hidden');
+            tagsModal.classList.remove('hidden');
+            renderTags();
+        };
+
+        document.getElementById('add-tag-btn').onclick = () => {
+            const val = document.getElementById('new-tag-input').value.trim().toLowerCase();
+            if (val && !chaosTags.includes(val)) {
+                chaosTags.push(val);
+                document.getElementById('new-tag-input').value = "";
+                renderTags();
+            }
+        };
+
+        document.getElementById('ai-tags-btn').onclick = async () => {
+            if (!geminiKey) { showToast("GEMINI_KEY_REQUIRED", "bg-red-600"); configModal.classList.remove('hidden'); tagsModal.classList.add('hidden'); return; }
+            const sourceRepos = ghToken ? remoteStars : localVault;
+            if (sourceRepos.length === 0) { showToast("NO_STARS_TO_ANALYZE", "bg-red-600"); return; }
+            
+            const btn = document.getElementById('ai-tags-btn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = "ANALYZING_PATTERNS..."; btn.disabled = true;
+
+            try {
+                const samples = sourceRepos.slice(0, 30).map(r => `${r.name}: ${r.description || ''}`).join('\n');
+                const prompt = `Analyze these repositories starred by a developer:\n${samples}\nExtract 8 high-level technical topics or keywords (single words, lowercase) that represent their specific interests (e.g. "rust", "neovim", "devops"). Return ONLY a raw JSON array of strings. No markdown.`;
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${geminiKey}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }) });
+                if (!res.ok) throw new Error("API_ERROR");
+                const data = await res.json();
+                const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                // Basic cleanup for JSON parsing
+                const jsonStr = text.replace(/```json|```/g, '').trim();
+                const newTags = JSON.parse(jsonStr);
+                if (Array.isArray(newTags)) {
+                    let addedCount = 0;
+                    newTags.forEach(tag => { const t = tag.toLowerCase().trim(); if (t && !chaosTags.includes(t)) { chaosTags.push(t); addedCount++; } });
+                    renderTags(); showToast(`ADDED_${addedCount}_SMART_TAGS`, "bg-[#00FF00] text-black");
+                }
+            } catch (e) { console.error(e); showToast("ANALYSIS_FAILED", "bg-red-600"); } 
+            finally { btn.innerHTML = originalText; btn.disabled = false; }
+        };
+
+        document.getElementById('reset-tags').onclick = () => {
+            chaosTags = JSON.parse(JSON.stringify(defaultTags));
+            renderTags();
+        };
+
+        document.getElementById('close-tags').onclick = () => {
+            localStorage.setItem('gs_chaos_tags', JSON.stringify(chaosTags));
+            tagsModal.classList.add('hidden');
+            configModal.classList.remove('hidden');
+            showToast("TAGS_UPDATED", "bg-[#00FF00] text-black");
+        };
+
+        // --- Other Global Handlers ---
+        window.openAnalyzer = async (repoId) => {
             const repo = (ghToken ? remoteStars : localVault).find(r => r.id == repoId) || repos[currentIndex];
             if (!repo) return;
             if (!geminiKey) { showToast("GEMINI_KEY_REQUIRED", "bg-red-600"); document.getElementById('btn-config').click(); return; }
@@ -398,8 +494,10 @@
                 addChatMessage("AI", `Erreur Critique: ${e.message}. Impossible d'analyser ce dépôt.`);
             }
         };
-        const closeAnalyzer = () => { viewAnalyzer.classList.add('hidden'); };
-        const sendMessage = async () => {
+
+        window.closeAnalyzer = () => { viewAnalyzer.classList.add('hidden'); };
+        
+        window.sendMessage = async () => {
             const input = document.getElementById('chat-input');
             const q = input.value.trim();
             if (!q || !geminiKey) return;
@@ -415,7 +513,8 @@
             } catch (e) { addChatMessage("AI", `Erreur API Gemini: ${e.message}`); } 
             finally { document.getElementById('btn-send').disabled = false; document.getElementById('btn-send').innerText = "SEND"; }
         };
-        const addChatMessage = (role, text) => {
+
+        function addChatMessage(role, text) {
             const div = document.createElement('div');
             div.className = `p-4 mb-4 rounded-none max-w-[85%] ${role === 'User' ? 'msg-user' : 'msg-ai'} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.5)]`;
             let contentHtml = role === 'AI' ? marked.parse(text) : text;
@@ -423,50 +522,157 @@
             const container = document.getElementById('analyzer-chat'); container.appendChild(div); container.scrollTop = container.scrollHeight;
             if(role === 'AI') div.querySelectorAll('pre code').forEach(hljs.highlightElement);
             chatHistory.push({role, text});
+        }
+
+        window.completeSwipe = async (dir) => {
+            const card = document.querySelector('.active-card'); if (!card) return;
+            swipeHistory.push({ index: currentIndex, direction: dir, repo: repos[currentIndex] }); updateUndoButton();
+            card.style.transition = "transform 0.2s ease-in"; card.style.transform = `translate(${dir === 'right' ? 800 : -800}px, 0) rotate(${dir === 'right' ? 30 : -30}deg)`;
+            if (dir === 'right') await toggleStar(repos[currentIndex], 'star');
+            setTimeout(() => { currentIndex++; if (currentIndex >= repos.length - 8 && mode !== 'search') { page++; fetchTrendingRepos(); } renderCurrentCard(); }, 120);
         };
 
-        // --- Swipe Logic ---
+        window.undoLastSwipe = async () => {
+            if (swipeHistory.length === 0) return;
+            const lastAction = swipeHistory.pop(); updateUndoButton();
+            if (lastAction.direction === 'right') await toggleStar(lastAction.repo, 'unstar');
+            currentIndex = lastAction.index; renderCurrentCard(true); showToast("UNDO", "bg-black text-white");
+        };
+
+        // --- Render UI ---
+        function renderCurrentCard(isUndo = false) {
+            const repo = repos[currentIndex]; if (!repo) return;
+            if (mode !== 'search') for(let i=1; i<=3; i++) if(repos[currentIndex+i]) fetchReadme(repos[currentIndex+i]);
+            
+            // Escaping quotes for onclick
+            const safeLogin = repo.owner.login.replace(/'/g, "\\'");
+            const safeName = repo.name.replace(/'/g, "\\'");
+            
+            cardContainer.innerHTML = `
+                <div class="active-card absolute inset-0 bg-white border-4 border-black shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] flex flex-col overflow-hidden ${isUndo ? 'card-undo-anim' : ''}">
+                    <div class="p-4 border-b-4 border-black bg-white flex justify-between items-center shrink-0">
+                        <div class="flex items-center gap-3 overflow-hidden">
+                            <img src="${repo.owner.avatar_url}" class="w-10 h-10 border-2 border-black" draggable="false">
+                            <div class="overflow-hidden leading-none">
+                                <p class="text-[9px] font-black uppercase text-black/40 mb-1">${repo.owner.login}</p>
+                                <h2 class="font-black text-base uppercase truncate leading-none">${repo.name}</h2>
+                            </div>
+                        </div>
+                        <div class="bg-[#00FF00] border-2 border-black px-2 py-1 text-[10px] font-black shrink-0">★ ${repo.stargazers_count}</div>
+                    </div>
+                    <div class="scrollable-content flex-1 overflow-y-auto overflow-x-hidden p-5 custom-scrollbar bg-white">
+                        <div class="p-4 border-2 border-black bg-[#f0f0f0] mb-5 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                            <p class="text-xs font-black uppercase italic leading-tight">"${repo.description || "NO_SUMMARY_FOUND"}"</p>
+                        </div>
+                        <div id="readme-box" class="markdown-body border-t-4 border-black pt-6">
+                            ${readmeCache[repo.id] || `<div class="py-20 flex flex-col items-center gap-2 opacity-20"><div class="w-6 h-6 border-4 border-black border-t-[#00FF00] animate-spin"></div><span class="text-[9px] font-black uppercase italic">Decrypting_Data...</span></div>`}
+                        </div>
+                    </div>
+                    <div class="p-3 border-t-4 border-black bg-white shrink-0 flex gap-2">
+                        <button onclick="openAnalyzer('${repo.id}')" class="flex-1 py-3 bg-white text-black border-2 border-black font-black uppercase text-[10px] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:shadow-none transition-all hover:bg-[#00FF00]">
+                            Chat_AI
+                        </button>
+                        <a href="${repo.html_url}" target="_blank" class="flex-1 block text-center py-3 bg-black text-[#00FF00] border-2 border-black font-black uppercase text-[10px] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:shadow-none transition-all hover:translate-x-[1px] hover:translate-y-[1px]">
+                            Open_Repo
+                        </a>
+                    </div>
+                </div>
+            `;
+            if (!readmeCache[repo.id]) fetchReadme(repo);
+            document.getElementById('feedback').classList.add('hidden');
+        }
+
+        window.unstar = async (owner, repoName, id) => { 
+            if (await toggleStar({ owner: { login: owner }, name: repoName, id }, 'unstar')) showToast("UNSTARRED", "bg-black text-white"); 
+        };
+
+        function renderVaultList(list) {
+            vaultTitle.innerText = ghToken ? "Stars" : "Vault";
+            if (list.length === 0) { vaultList.innerHTML = `<div class="p-20 border-4 border-dashed border-black text-center opacity-20 font-black uppercase text-xs italic">Sector_Empty</div>`; return; }
+            vaultList.innerHTML = list.map(f => {
+                const safeLogin = f.owner.login.replace(/'/g, "\\'");
+                const safeName = f.name.replace(/'/g, "\\'");
+                return `
+                <div onclick="openAnalyzer('${f.id}')" class="cursor-pointer bg-white p-4 border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] flex items-center gap-4 hover:translate-x-1 transition-transform group">
+                    <img src="${f.owner.avatar_url}" class="w-10 h-10 border-2 border-black shrink-0">
+                    <div class="flex-1 overflow-hidden">
+                        <h4 class="font-black uppercase truncate text-xs group-hover:text-[#00aa00] transition-colors">${f.name}</h4>
+                        <p class="text-[9px] font-black uppercase opacity-40">★ ${f.stargazers_count}</p>
+                    </div>
+                    <div class="flex gap-2 shrink-0">
+                        <a href="${f.html_url}" target="_blank" onclick="event.stopPropagation()" class="p-2 border-2 border-black bg-black text-[#00FF00] hover:bg-[#00FF00] hover:text-black transition-colors"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg></a>
+                        <button onclick="event.stopPropagation(); unstar('${safeLogin}', '${safeName}', ${f.id})" class="p-2 border-2 border-black hover:bg-red-600 hover:text-white transition-colors"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6"/></svg></button>
+                    </div>
+                </div>
+            `}).join('');
+        }
+
+        // --- Swipe Events ---
         let startX = 0, startY = 0, currentX = 0, currentY = 0, isDragging = false, swipeIntent = null; 
+        
         const handleStart = (e) => { 
+            // Ignorer si on clique sur un bouton ou un lien
             if (e.target.closest('button, a, input')) return;
+            
+            // Sécurité 2 : Si on n'est pas sur la vue découverte, on ne fait rien
             if (viewDiscover.classList.contains('hidden')) return;
-            isDragging = true; swipeIntent = null; 
+
+            isDragging = true; 
+            swipeIntent = null; 
             startX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX; 
             startY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY; 
-            currentX = startX; currentY = startY; 
+            currentX = startX; 
+            currentY = startY; 
+            
+            // Annuler la transition pour une réaction instantanée
             const card = document.querySelector('.active-card');
             if (card) card.style.transition = 'none';
         };
         
         const handleMove = (e) => {
             if (!isDragging) return;
+            
             currentX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX; 
             currentY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
+            
             const dx = currentX - startX;
             const dy = currentY - startY;
+
+            // Détection de l'intention (Verrouillage d'axe)
             if (!swipeIntent) {
-                if (Math.abs(dx) > 15) swipeIntent = 'horizontal';
-                else if (Math.abs(dy) > 15) swipeIntent = 'vertical';
+                // On augmente légèrement le seuil pour éviter les faux positifs (10px -> 15px)
+                if (Math.abs(dx) > 15) {
+                    swipeIntent = 'horizontal';
+                } else if (Math.abs(dy) > 15) {
+                    swipeIntent = 'vertical';
+                }
             }
+
+            // Si l'intention est horizontale, on prend le contrôle total
             if (swipeIntent === 'horizontal') { 
-                if (e.cancelable) e.preventDefault(); 
+                if (e.cancelable) e.preventDefault(); // Empêche le scroll natif (Android/iOS pull-to-refresh)
+                
                 const card = document.querySelector('.active-card'); 
                 if (card) { 
+                    // Ajout d'une résistance verticale (dy * 0.05) pour garder la carte alignée
                     card.style.transform = `translate(${dx}px, ${dy * 0.05}px) rotate(${dx / 20}deg)`; 
                     updateFeedback(dx); 
                 } 
             }
+            // Si l'intention est verticale (scroll texte), on laisse le navigateur gérer nativement
         };
 
         const handleEnd = () => { 
             if (!isDragging) return; 
             isDragging = false; 
+            
             if (swipeIntent === 'horizontal') { 
                 const dx = currentX - startX; 
-                if (dx > 100) completeSwipe('right'); 
+                if (dx > 100) completeSwipe('right'); // Seuil augmenté pour éviter les swipes accidentels
                 else if (dx < -100) completeSwipe('left'); 
                 else resetCard(); 
             } else {
+                // Si on a juste cliqué ou scrollé verticalement, on remet tout propre
                 resetCard();
             }
             swipeIntent = null;
@@ -489,67 +695,8 @@
             fb.className = `absolute top-1/2 -translate-y-1/2 z-50 px-10 py-5 border-4 border-black font-black text-4xl uppercase shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] pointer-events-none ${dx > 0 ? 'right-4 bg-[#00FF00] text-black rotate-3' : 'left-4 bg-black text-white -rotate-3'}`; 
         };
 
-        const completeSwipe = async (dir) => {
-            const card = document.querySelector('.active-card'); if (!card) return;
-            swipeHistory.push({ index: currentIndex, direction: dir, repo: repos[currentIndex] }); updateUndoButton();
-            card.style.transition = "transform 0.2s ease-in"; card.style.transform = `translate(${dir === 'right' ? 800 : -800}px, 0) rotate(${dir === 'right' ? 30 : -30}deg)`;
-            if (dir === 'right') await toggleStar(repos[currentIndex], 'star');
-            setTimeout(() => { currentIndex++; if (currentIndex >= repos.length - 8 && mode !== 'search') { page++; fetchTrendingRepos(); } renderCurrentCard(); }, 120);
-        };
-
-        const undoLastSwipe = async () => {
-            if (swipeHistory.length === 0) return;
-            const lastAction = swipeHistory.pop(); updateUndoButton();
-            if (lastAction.direction === 'right') await toggleStar(lastAction.repo, 'unstar');
-            currentIndex = lastAction.index; renderCurrentCard(true); showToast("UNDO", "bg-black text-white");
-        };
-
+        // --- Other Handlers ---
         const updateUndoButton = () => { if (swipeHistory.length > 0) { btnUndo.classList.replace('opacity-30', 'opacity-100'); btnUndo.classList.replace('cursor-not-allowed', 'cursor-pointer'); } else { btnUndo.classList.replace('opacity-100', 'opacity-30'); btnUndo.classList.replace('cursor-pointer', 'cursor-not-allowed'); } };
-
-        // --- TAGS MANAGEMENT ---
-        const renderTags = () => {
-            const list = document.getElementById('tags-list');
-            list.innerHTML = chaosTags.map(tag => `
-                <div class="inline-flex items-center bg-black text-[#00FF00] px-3 py-1 border-2 border-black text-[10px] font-bold uppercase gap-2">
-                    <span>${tag}</span>
-                    <button onclick="removeTag('${tag}')" class="hover:text-white">x</button>
-                </div>
-            `).join('');
-        };
-
-        window.removeTag = (tag) => {
-            chaosTags = chaosTags.filter(t => t !== tag);
-            renderTags();
-        };
-
-        document.getElementById('open-tags-btn').onclick = () => {
-            configModal.classList.add('hidden');
-            tagsModal.classList.remove('hidden');
-            renderTags();
-        };
-
-        document.getElementById('add-tag-btn').onclick = () => {
-            const val = document.getElementById('new-tag-input').value.trim().toLowerCase();
-            if (val && !chaosTags.includes(val)) {
-                chaosTags.push(val);
-                document.getElementById('new-tag-input').value = "";
-                renderTags();
-            }
-        };
-
-        document.getElementById('reset-tags').onclick = () => {
-            chaosTags = JSON.parse(JSON.stringify(defaultTags));
-            renderTags();
-        };
-
-        document.getElementById('close-tags').onclick = () => {
-            localStorage.setItem('gs_chaos_tags', JSON.stringify(chaosTags));
-            tagsModal.classList.add('hidden');
-            configModal.classList.remove('hidden');
-            showToast("TAGS_UPDATED", "bg-[#00FF00] text-black");
-        };
-
-        // --- Common Helpers ---
         const showToast = (msg, classes) => { const toast = document.createElement('div'); toast.className = `fixed bottom-10 left-1/2 -translate-x-1/2 px-8 py-3 border-4 border-black font-black uppercase text-[10px] z-[200] shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] ${classes}`; toast.innerText = msg; document.body.appendChild(toast); setTimeout(() => toast.remove(), 1500); };
         
         const updateNavStyles = (activeBtn) => { 
@@ -596,64 +743,6 @@
         window.addEventListener('mouseup', handleEnd);
         window.addEventListener('touchmove', handleMove, { passive: false }); 
         window.addEventListener('touchend', handleEnd);
-
-        // --- Render Current Card ---
-        const renderCurrentCard = (isUndo = false) => {
-            const repo = repos[currentIndex]; if (!repo) return;
-            if (mode !== 'search') for(let i=1; i<=3; i++) if(repos[currentIndex+i]) fetchReadme(repos[currentIndex+i]);
-            
-            cardContainer.innerHTML = `
-                <div class="active-card absolute inset-0 bg-white border-4 border-black shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] flex flex-col overflow-hidden ${isUndo ? 'card-undo-anim' : ''}">
-                    <div class="p-4 border-b-4 border-black bg-white flex justify-between items-center shrink-0">
-                        <div class="flex items-center gap-3 overflow-hidden">
-                            <img src="${repo.owner.avatar_url}" class="w-10 h-10 border-2 border-black" draggable="false">
-                            <div class="overflow-hidden leading-none">
-                                <p class="text-[9px] font-black uppercase text-black/40 mb-1">${repo.owner.login}</p>
-                                <h2 class="font-black text-base uppercase truncate leading-none">${repo.name}</h2>
-                            </div>
-                        </div>
-                        <div class="bg-[#00FF00] border-2 border-black px-2 py-1 text-[10px] font-black shrink-0">★ ${repo.stargazers_count}</div>
-                    </div>
-                    <div class="scrollable-content flex-1 overflow-y-auto overflow-x-hidden p-5 custom-scrollbar bg-white">
-                        <div class="p-4 border-2 border-black bg-[#f0f0f0] mb-5 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-                            <p class="text-xs font-black uppercase italic leading-tight">"${repo.description || "NO_SUMMARY_FOUND"}"</p>
-                        </div>
-                        <div id="readme-box" class="markdown-body border-t-4 border-black pt-6">
-                            ${readmeCache[repo.id] || `<div class="py-20 flex flex-col items-center gap-2 opacity-20"><div class="w-6 h-6 border-4 border-black border-t-[#00FF00] animate-spin"></div><span class="text-[9px] font-black uppercase italic">Decrypting_Data...</span></div>`}
-                        </div>
-                    </div>
-                    <div class="p-3 border-t-4 border-black bg-white shrink-0 flex gap-2">
-                        <button onclick="openAnalyzer('${repo.id}')" class="flex-1 py-3 bg-white text-black border-2 border-black font-black uppercase text-[10px] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:shadow-none transition-all hover:bg-[#00FF00]">
-                            Chat_AI
-                        </button>
-                        <a href="${repo.html_url}" target="_blank" class="flex-1 block text-center py-3 bg-black text-[#00FF00] border-2 border-black font-black uppercase text-[10px] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:shadow-none transition-all hover:translate-x-[1px] hover:translate-y-[1px]">
-                            Open_Repo
-                        </a>
-                    </div>
-                </div>
-            `;
-            if (!readmeCache[repo.id]) fetchReadme(repo);
-            document.getElementById('feedback').classList.add('hidden');
-        };
-
-        // --- Render Vault List (RESTORED) ---
-        const renderVaultList = (list) => {
-            vaultTitle.innerText = ghToken ? "Stars" : "Vault";
-            if (list.length === 0) { vaultList.innerHTML = `<div class="p-20 border-4 border-dashed border-black text-center opacity-20 font-black uppercase text-xs italic">Sector_Empty</div>`; return; }
-            vaultList.innerHTML = list.map(f => `
-                <div onclick="openAnalyzer('${f.id}')" class="cursor-pointer bg-white p-4 border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] flex items-center gap-4 hover:translate-x-1 transition-transform group">
-                    <img src="${f.owner.avatar_url}" class="w-10 h-10 border-2 border-black shrink-0">
-                    <div class="flex-1 overflow-hidden">
-                        <h4 class="font-black uppercase truncate text-xs group-hover:text-[#00aa00] transition-colors">${f.name}</h4>
-                        <p class="text-[9px] font-black uppercase opacity-40">★ ${f.stargazers_count}</p>
-                    </div>
-                    <div class="flex gap-2 shrink-0">
-                        <a href="${f.html_url}" target="_blank" onclick="event.stopPropagation()" class="p-2 border-2 border-black bg-black text-[#00FF00] hover:bg-[#00FF00] hover:text-black transition-colors"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg></a>
-                        <button onclick="event.stopPropagation(); unstar('${f.owner.login}', '${f.name}', ${f.id})" class="p-2 border-2 border-black hover:bg-red-600 hover:text-white transition-colors"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6"/></svg></button>
-                    </div>
-                </div>
-            `).join('');
-        };
 
         fetchUserStars(true).then(() => fetchTrendingRepos());
     </script>
