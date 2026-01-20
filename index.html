@@ -206,11 +206,16 @@
             
             <div class="flex justify-between items-center mb-6 border-b-4 border-[#00FF00] pb-2">
                 <h3 class="font-black text-2xl uppercase italic">Config.sys</h3>
-                
-                <!-- Bouton pour ouvrir l'éditeur de tags (Intégré dans le header de la modal) -->
-                <button id="open-tags-btn" class="border-2 border-black bg-white p-2 hover:bg-[#00FF00] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:shadow-none transition-all" title="Edit Random Tags">
-                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
-                </button>
+
+                <!-- Boutons pour ouvrir l'éditeur de tags et installer la PWA -->
+                <div class="flex gap-2">
+                    <button id="open-tags-btn" class="border-2 border-black bg-white p-2 hover:bg-[#00FF00] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:shadow-none transition-all" title="Edit Random Tags">
+                        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+                    </button>
+                    <button id="install-pwa-btn" class="border-2 border-black bg-white p-2 hover:bg-[#00FF00] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:shadow-none transition-all" title="Install PWA">
+                        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    </button>
+                </div>
             </div>
             
             <div class="mb-6">
@@ -240,6 +245,13 @@
                 .then(reg => console.log('SW registered'))
                 .catch(err => console.log('SW registration failed', err));
         }
+
+        // PWA Install Prompt
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+        });
 
         // --- State ---
         let repos = [];
@@ -733,6 +745,21 @@
             configModal.classList.remove('hidden');
         };
         document.getElementById('close-modal').onclick = () => configModal.classList.add('hidden');
+        document.getElementById('install-pwa-btn').onclick = () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        showToast("PWA_INSTALLED", "bg-[#00FF00] text-black");
+                    } else {
+                        showToast("INSTALL_CANCELLED", "bg-red-600");
+                    }
+                    deferredPrompt = null;
+                });
+            } else {
+                showToast("INSTALL_NOT_SUPPORTED", "bg-red-600");
+            }
+        };
         document.getElementById('save-config').onclick = () => {
             ghToken = document.getElementById('gh-token-input').value.trim();
             geminiKey = document.getElementById('gemini-key-input').value.trim();
