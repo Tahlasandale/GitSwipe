@@ -8,6 +8,7 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/a11y-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <link rel="manifest" href="manifest.json">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap');
         
@@ -151,6 +152,10 @@
         </div>
     </main>
 
+    <footer class="bg-black text-white border-t-4 border-black px-4 py-2 text-center text-[8px] font-bold uppercase">
+        <a href="README.md" target="_blank" class="underline hover:text-[#00FF00]">Lire le README</a>
+    </footer>
+
     <!-- Search Modal -->
     <div id="search-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-sm p-4">
         <div class="bg-white border-4 border-black p-8 max-w-md w-full shadow-[15px_15px_0px_0px_rgba(0,255,0,1)]">
@@ -229,19 +234,26 @@
     </div>
 
     <script>
+        // PWA Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js')
+                .then(reg => console.log('SW registered'))
+                .catch(err => console.log('SW registration failed', err));
+        }
+
         // --- State ---
         let repos = [];
         let currentIndex = 0;
         let page = 1;
         let isLoading = false;
-        let mode = 'trending'; 
+        let mode = 'trending';
         let readmeCache = {};
         let fetchingIds = new Set();
         let ghToken = localStorage.getItem('gs_gh_token') || "";
         let geminiKey = localStorage.getItem('gs_gemini_key') || "";
         let localVault = JSON.parse(localStorage.getItem('gs_vault') || "[]");
         let remoteStars = [];
-        let swipeHistory = []; 
+        let swipeHistory = [];
         let currentRepoContext = ""; // For Chat
         let chatHistory = []; // For Chat
 
