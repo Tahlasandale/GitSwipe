@@ -139,6 +139,10 @@
             </div>
 
             <div id="analyzer-chat" class="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar bg-[#f4f4f4] relative">
+<<<<<<< HEAD
+                <!-- Chat messages go here -->
+=======
+>>>>>>> f56677d9eae0ed3678580b3b0da709606f040186
                 <div class="p-4 border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)]">
                     <p class="font-bold text-xs uppercase mb-2 text-[#00FF00] bg-black inline-block px-1">SYSTEM</p>
                     <p class="text-xs">Initialisation de l'analyseur. Posez une question sur le code pour commencer.</p>
@@ -204,6 +208,13 @@
             
             <div class="flex justify-between items-center mb-6 border-b-4 border-[#00FF00] pb-2">
                 <h3 class="font-black text-2xl uppercase italic">Config.sys</h3>
+<<<<<<< HEAD
+                
+                <!-- Bouton pour ouvrir l'éditeur de tags -->
+                <button id="open-tags-btn" class="border-2 border-black bg-white p-2 hover:bg-[#00FF00] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:shadow-none transition-all" title="Edit Random Tags">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+                </button>
+=======
 
                 <!-- Boutons pour ouvrir l'éditeur de tags et installer la PWA -->
                 <div class="flex gap-2">
@@ -214,11 +225,27 @@
                         <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                     </button>
                 </div>
+>>>>>>> f56677d9eae0ed3678580b3b0da709606f040186
             </div>
             
             <div class="mb-6">
                 <label class="block text-[10px] font-black uppercase mb-2">GitHub Token (Classic)</label>
                 <input id="gh-token-input" type="password" placeholder="ghp_XXXXXXXXXXXXXXXXXXXX" class="w-full p-3 border-4 border-black text-sm focus:outline-none focus:bg-indigo-50 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+<<<<<<< HEAD
+                <p class="text-[9px] text-gray-500 mt-1">Requis pour Starrer et charger le code. <a href="https://github.com/settings/tokens" target="_blank" class="underline hover:text-[#00FF00]">Obtenir un token</a>.</p>
+            </div>
+
+            <div class="mb-8">
+                <label class="block text-[10px] font-black uppercase mb-2">Gemini API Key & Model</label>
+                <div class="flex gap-2 mb-2">
+                    <input id="gemini-key-input" type="password" placeholder="AIzaSy..." class="flex-1 p-3 border-4 border-black text-sm focus:outline-none focus:bg-indigo-50 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                    <button id="load-models-btn" class="bg-white text-black px-4 font-black uppercase text-[10px] border-4 border-black hover:bg-[#00FF00] hover:text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none transition-all">LOAD</button>
+                </div>
+                <select id="gemini-model-select" class="w-full p-3 border-4 border-black text-xs font-bold uppercase focus:outline-none focus:bg-indigo-50 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] appearance-none bg-white cursor-pointer">
+                    <option value="gemini-1.5-flash">gemini-1.5-flash (Default)</option>
+                </select>
+                <p class="text-[9px] text-gray-500 mt-2">Requise pour le chat AI. <a href="https://aistudio.google.com/app/apikey" target="_blank" class="underline hover:text-[#00FF00]">Obtenir une clé</a>.</p>
+=======
                 <p class="text-[9px] text-gray-500 mt-1">Requis pour Starrer et charger le code (Rate Limit). <a href="https://github.com/settings/tokens" target="_blank" class="underline hover:text-[#00FF00]">Obtenir un token</a>.</p>
             </div>
 
@@ -226,6 +253,7 @@
                 <label class="block text-[10px] font-black uppercase mb-2">Gemini API Key</label>
                 <input id="gemini-key-input" type="password" placeholder="AIzaSy..." class="w-full p-3 border-4 border-black text-sm focus:outline-none focus:bg-indigo-50 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
                 <p class="text-[9px] text-gray-500 mt-1">Requise pour le chat et l'analyse AI. <a href="https://aistudio.google.com/app/apikey" target="_blank" class="underline hover:text-[#00FF00]">Obtenir une clé</a>.</p>
+>>>>>>> f56677d9eae0ed3678580b3b0da709606f040186
             </div>
 
             <div class="flex flex-col gap-3">
@@ -237,6 +265,8 @@
     </div>
 
     <script>
+<<<<<<< HEAD
+=======
         // PWA Service Worker Registration
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js')
@@ -251,19 +281,31 @@
             deferredPrompt = e;
         });
 
+>>>>>>> f56677d9eae0ed3678580b3b0da709606f040186
         // --- State ---
         let repos = [];
         let currentIndex = 0;
         let page = 1;
         let isLoading = false;
+<<<<<<< HEAD
+        let mode = 'trending'; 
+=======
         let mode = 'trending';
+>>>>>>> f56677d9eae0ed3678580b3b0da709606f040186
         let readmeCache = {};
         let fetchingIds = new Set();
         let ghToken = localStorage.getItem('gs_gh_token') || "";
         let geminiKey = localStorage.getItem('gs_gemini_key') || "";
+<<<<<<< HEAD
+        let geminiModel = localStorage.getItem('gs_gemini_model') || "gemini-1.5-flash";
+        let localVault = JSON.parse(localStorage.getItem('gs_vault') || "[]");
+        let remoteStars = [];
+        let swipeHistory = []; 
+=======
         let localVault = JSON.parse(localStorage.getItem('gs_vault') || "[]");
         let remoteStars = [];
         let swipeHistory = [];
+>>>>>>> f56677d9eae0ed3678580b3b0da709606f040186
         let currentRepoContext = ""; // For Chat
         let chatHistory = []; // For Chat
 
@@ -292,6 +334,10 @@
         const tagsModal = document.getElementById('tags-modal');
         const btnUndo = document.getElementById('btn-undo');
         const vaultRefreshIndicator = document.getElementById('vault-loading-indicator');
+<<<<<<< HEAD
+        const modelSelect = document.getElementById('gemini-model-select');
+=======
+>>>>>>> f56677d9eae0ed3678580b3b0da709606f040186
 
         // --- Moteur de Chaos ---
         const getChaosParams = () => {
@@ -407,6 +453,46 @@
             finally { fetchingIds.delete(repo.id); }
         }
 
+<<<<<<< HEAD
+        // --- MODEL LOADING ---
+        document.getElementById('load-models-btn').onclick = async () => {
+            const key = document.getElementById('gemini-key-input').value.trim();
+            if (!key) return showToast("API KEY REQUIRED", "bg-red-600");
+            
+            const btn = document.getElementById('load-models-btn');
+            const originalText = btn.innerText;
+            btn.innerText = "...";
+            btn.disabled = true;
+
+            try {
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${key}`);
+                if (!res.ok) throw new Error("INVALID KEY");
+                const data = await res.json();
+                
+                modelSelect.innerHTML = '';
+                // Filter models supporting generation and matching "gemini"
+                const validModels = data.models.filter(m => m.supportedGenerationMethods.includes("generateContent") && m.name.includes("gemini"));
+                
+                validModels.forEach(m => {
+                    const modelId = m.name.replace('models/', '');
+                    const option = document.createElement('option');
+                    option.value = modelId;
+                    option.innerText = modelId;
+                    if (modelId === geminiModel) option.selected = true;
+                    modelSelect.appendChild(option);
+                });
+                
+                showToast("MODELS LOADED", "bg-[#00FF00] text-black");
+            } catch (e) {
+                showToast("API ERROR", "bg-red-600");
+            } finally {
+                btn.innerText = originalText;
+                btn.disabled = false;
+            }
+        };
+
+=======
+>>>>>>> f56677d9eae0ed3678580b3b0da709606f040186
         // --- TAGS MANAGEMENT ---
         const renderTags = () => {
             const list = document.getElementById('tags-list');
@@ -450,11 +536,20 @@
             try {
                 const samples = sourceRepos.slice(0, 30).map(r => `${r.name}: ${r.description || ''}`).join('\n');
                 const prompt = `Analyze these repositories starred by a developer:\n${samples}\nExtract 8 high-level technical topics or keywords (single words, lowercase) that represent their specific interests (e.g. "rust", "neovim", "devops"). Return ONLY a raw JSON array of strings. No markdown.`;
+<<<<<<< HEAD
+                
+                // Using selected dynamic model
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${geminiModel}:generateContent?key=${geminiKey}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }) });
+                if (!res.ok) throw new Error("API_ERROR");
+                const data = await res.json();
+                const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+=======
                 const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${geminiKey}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }) });
                 if (!res.ok) throw new Error("API_ERROR");
                 const data = await res.json();
                 const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
                 // Basic cleanup for JSON parsing
+>>>>>>> f56677d9eae0ed3678580b3b0da709606f040186
                 const jsonStr = text.replace(/```json|```/g, '').trim();
                 const newTags = JSON.parse(jsonStr);
                 if (Array.isArray(newTags)) {
@@ -478,14 +573,22 @@
             showToast("TAGS_UPDATED", "bg-[#00FF00] text-black");
         };
 
+<<<<<<< HEAD
+        // --- ANALYZER / CHAT LOGIC ---
+=======
         // --- Other Global Handlers ---
+>>>>>>> f56677d9eae0ed3678580b3b0da709606f040186
         window.openAnalyzer = async (repoId) => {
             const repo = (ghToken ? remoteStars : localVault).find(r => r.id == repoId) || repos[currentIndex];
             if (!repo) return;
             if (!geminiKey) { showToast("GEMINI_KEY_REQUIRED", "bg-red-600"); document.getElementById('btn-config').click(); return; }
             viewAnalyzer.classList.remove('hidden');
             document.getElementById('analyzer-title').innerText = `${repo.owner.login}/${repo.name}`;
+<<<<<<< HEAD
+            document.getElementById('analyzer-chat').innerHTML = `<div class="p-4 border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)]"><p class="font-bold text-xs uppercase mb-2 text-[#00FF00] bg-black inline-block px-1">SYSTEM</p><p class="text-xs">Démarrage de l'analyseur pour ${repo.name}...</p><p class="text-[9px] text-gray-500 mt-1">Model: ${geminiModel}</p></div>`;
+=======
             document.getElementById('analyzer-chat').innerHTML = `<div class="p-4 border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)]"><p class="font-bold text-xs uppercase mb-2 text-[#00FF00] bg-black inline-block px-1">SYSTEM</p><p class="text-xs">Démarrage de l'analyseur pour ${repo.name}...</p></div>`;
+>>>>>>> f56677d9eae0ed3678580b3b0da709606f040186
             document.getElementById('analyzer-loading').classList.remove('hidden');
             document.getElementById('analyzer-chat').classList.add('hidden');
             chatHistory = []; currentRepoContext = "";
@@ -516,9 +619,13 @@
                 addChatMessage("AI", `Erreur Critique: ${e.message}. Impossible d'analyser ce dépôt.`);
             }
         };
+<<<<<<< HEAD
+        window.closeAnalyzer = () => { viewAnalyzer.classList.add('hidden'); };
+=======
 
         window.closeAnalyzer = () => { viewAnalyzer.classList.add('hidden'); };
         
+>>>>>>> f56677d9eae0ed3678580b3b0da709606f040186
         window.sendMessage = async () => {
             const input = document.getElementById('chat-input');
             const q = input.value.trim();
@@ -527,7 +634,12 @@
             addChatMessage("User", q);
             const context = `Tu es un expert en code. Analyse ce code source:\n${currentRepoContext.slice(0, 30000)}...\n(Tronqué si trop long)\n\nHistorique:\n${chatHistory.slice(-4).map(x=>x.role+': '+x.text).join('\n')}\nUtilisateur: ${q}\nRéponds de manière concise, technique, et formatée en Markdown.`;
             try {
+<<<<<<< HEAD
+                // Using dynamic model here
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${geminiModel}:generateContent?key=${geminiKey}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts: [{ text: context }] }] }) });
+=======
                 const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${geminiKey}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts: [{ text: context }] }] }) });
+>>>>>>> f56677d9eae0ed3678580b3b0da709606f040186
                 if (!res.ok) throw new Error((await res.json()).error?.message || "API Error");
                 const data = await res.json();
                 const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "No response";
@@ -546,6 +658,74 @@
             chatHistory.push({role, text});
         }
 
+<<<<<<< HEAD
+        // --- Swipe Logic ---
+        let startX = 0, startY = 0, currentX = 0, currentY = 0, isDragging = false, swipeIntent = null; 
+        
+        const handleStart = (e) => { 
+            if (e.target.closest('button, a, input')) return;
+            if (viewDiscover.classList.contains('hidden')) return;
+            isDragging = true; swipeIntent = null; 
+            startX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX; 
+            startY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY; 
+            currentX = startX; currentY = startY; 
+            const card = document.querySelector('.active-card');
+            if (card) card.style.transition = 'none';
+        };
+        
+        const handleMove = (e) => {
+            if (!isDragging) return;
+            currentX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX; 
+            currentY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
+            const dx = currentX - startX;
+            const dy = currentY - startY;
+            if (!swipeIntent) {
+                if (Math.abs(dx) > 15) swipeIntent = 'horizontal';
+                else if (Math.abs(dy) > 15) swipeIntent = 'vertical';
+            }
+            if (swipeIntent === 'horizontal') { 
+                if (e.cancelable) e.preventDefault(); 
+                const card = document.querySelector('.active-card'); 
+                if (card) { 
+                    card.style.transform = `translate(${dx}px, ${dy * 0.05}px) rotate(${dx / 20}deg)`; 
+                    updateFeedback(dx); 
+                } 
+            }
+        };
+
+        const handleEnd = () => { 
+            if (!isDragging) return; 
+            isDragging = false; 
+            if (swipeIntent === 'horizontal') { 
+                const dx = currentX - startX; 
+                if (dx > 100) completeSwipe('right'); 
+                else if (dx < -100) completeSwipe('left'); 
+                else resetCard(); 
+            } else {
+                resetCard();
+            }
+            swipeIntent = null;
+        };
+
+        const resetCard = () => { 
+            const card = document.querySelector('.active-card'); 
+            if (card) { 
+                card.style.transition = "transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)"; 
+                card.style.transform = `translate(0,0) rotate(0)`; 
+                document.getElementById('feedback').classList.add('hidden'); 
+            } 
+        };
+
+        const updateFeedback = (dx) => { 
+            const fb = document.getElementById('feedback'); 
+            if (Math.abs(dx) < 40) { fb.classList.add('hidden'); return; } 
+            fb.classList.remove('hidden'); 
+            fb.innerText = dx > 0 ? "STAR" : "SKIP"; 
+            fb.className = `absolute top-1/2 -translate-y-1/2 z-50 px-10 py-5 border-4 border-black font-black text-4xl uppercase shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] pointer-events-none ${dx > 0 ? 'right-4 bg-[#00FF00] text-black rotate-3' : 'left-4 bg-black text-white -rotate-3'}`; 
+        };
+
+=======
+>>>>>>> f56677d9eae0ed3678580b3b0da709606f040186
         window.completeSwipe = async (dir) => {
             const card = document.querySelector('.active-card'); if (!card) return;
             swipeHistory.push({ index: currentIndex, direction: dir, repo: repos[currentIndex] }); updateUndoButton();
@@ -561,12 +741,20 @@
             currentIndex = lastAction.index; renderCurrentCard(true); showToast("UNDO", "bg-black text-white");
         };
 
+<<<<<<< HEAD
+        const updateUndoButton = () => { if (swipeHistory.length > 0) { btnUndo.classList.replace('opacity-30', 'opacity-100'); btnUndo.classList.replace('cursor-not-allowed', 'cursor-pointer'); } else { btnUndo.classList.replace('opacity-100', 'opacity-30'); btnUndo.classList.replace('cursor-pointer', 'cursor-not-allowed'); } };
+
+=======
+>>>>>>> f56677d9eae0ed3678580b3b0da709606f040186
         // --- Render UI ---
         function renderCurrentCard(isUndo = false) {
             const repo = repos[currentIndex]; if (!repo) return;
             if (mode !== 'search') for(let i=1; i<=3; i++) if(repos[currentIndex+i]) fetchReadme(repos[currentIndex+i]);
             
+<<<<<<< HEAD
+=======
             // Escaping quotes for onclick
+>>>>>>> f56677d9eae0ed3678580b3b0da709606f040186
             const safeLogin = repo.owner.login.replace(/'/g, "\\'");
             const safeName = repo.name.replace(/'/g, "\\'");
             
@@ -604,10 +792,13 @@
             document.getElementById('feedback').classList.add('hidden');
         }
 
+<<<<<<< HEAD
+=======
         window.unstar = async (owner, repoName, id) => { 
             if (await toggleStar({ owner: { login: owner }, name: repoName, id }, 'unstar')) showToast("UNSTARRED", "bg-black text-white"); 
         };
 
+>>>>>>> f56677d9eae0ed3678580b3b0da709606f040186
         function renderVaultList(list) {
             vaultTitle.innerText = ghToken ? "Stars" : "Vault";
             if (list.length === 0) { vaultList.innerHTML = `<div class="p-20 border-4 border-dashed border-black text-center opacity-20 font-black uppercase text-xs italic">Sector_Empty</div>`; return; }
@@ -629,6 +820,9 @@
             `}).join('');
         }
 
+<<<<<<< HEAD
+        // --- Initialisation & Events ---
+=======
         // --- Swipe Events ---
         let startX = 0, startY = 0, currentX = 0, currentY = 0, isDragging = false, swipeIntent = null; 
         
@@ -721,6 +915,7 @@
         const updateUndoButton = () => { if (swipeHistory.length > 0) { btnUndo.classList.replace('opacity-30', 'opacity-100'); btnUndo.classList.replace('cursor-not-allowed', 'cursor-pointer'); } else { btnUndo.classList.replace('opacity-100', 'opacity-30'); btnUndo.classList.replace('cursor-pointer', 'cursor-not-allowed'); } };
         const showToast = (msg, classes) => { const toast = document.createElement('div'); toast.className = `fixed bottom-10 left-1/2 -translate-x-1/2 px-8 py-3 border-4 border-black font-black uppercase text-[10px] z-[200] shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] ${classes}`; toast.innerText = msg; document.body.appendChild(toast); setTimeout(() => toast.remove(), 1500); };
         
+>>>>>>> f56677d9eae0ed3678580b3b0da709606f040186
         const updateNavStyles = (activeBtn) => { 
             [btnTrending, btnRandom, btnVault, btnSearch].forEach(b => { 
                 if (b === activeBtn) { b.classList.add('bg-[#00FF00]', 'text-black', 'shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]', 'translate-x-[-1px]', 'translate-y-[-1px]'); } 
@@ -740,6 +935,32 @@
         document.getElementById('btn-config').onclick = () => {
             document.getElementById('gh-token-input').value = ghToken;
             document.getElementById('gemini-key-input').value = geminiKey;
+<<<<<<< HEAD
+            
+            // S'assurer que le select affiche au moins le modèle sauvegardé
+            if(modelSelect.options.length === 1 && modelSelect.options[0].value === "gemini-1.5-flash" && geminiModel !== "gemini-1.5-flash") {
+                const opt = document.createElement('option');
+                opt.value = geminiModel; opt.innerText = geminiModel;
+                modelSelect.appendChild(opt); modelSelect.value = geminiModel;
+            } else if (Array.from(modelSelect.options).some(o => o.value === geminiModel)) {
+                modelSelect.value = geminiModel;
+            }
+
+            configModal.classList.remove('hidden');
+        };
+        
+        document.getElementById('close-modal').onclick = () => configModal.classList.add('hidden');
+        
+        document.getElementById('save-config').onclick = () => {
+            ghToken = document.getElementById('gh-token-input').value.trim();
+            geminiKey = document.getElementById('gemini-key-input').value.trim();
+            geminiModel = modelSelect.value || "gemini-1.5-flash";
+            
+            localStorage.setItem('gs_gh_token', ghToken);
+            localStorage.setItem('gs_gemini_key', geminiKey);
+            localStorage.setItem('gs_gemini_model', geminiModel);
+            
+=======
             configModal.classList.remove('hidden');
         };
         document.getElementById('close-modal').onclick = () => configModal.classList.add('hidden');
@@ -763,10 +984,23 @@
             geminiKey = document.getElementById('gemini-key-input').value.trim();
             localStorage.setItem('gs_gh_token', ghToken);
             localStorage.setItem('gs_gemini_key', geminiKey);
+>>>>>>> f56677d9eae0ed3678580b3b0da709606f040186
             showToast("CONFIG_SAVED", "bg-[#00FF00] text-black");
             configModal.classList.add('hidden');
             fetchTrendingRepos(true);
         };
+<<<<<<< HEAD
+        
+        document.getElementById('clear-config').onclick = () => {
+            localStorage.removeItem('gs_gh_token'); 
+            localStorage.removeItem('gs_gemini_key');
+            localStorage.removeItem('gs_gemini_model');
+            window.location.reload();
+        };
+
+        cardContainer.addEventListener('mousedown', handleStart);
+        cardContainer.addEventListener('touchstart', handleStart, { passive: false });
+=======
         document.getElementById('clear-config').onclick = () => {
             localStorage.removeItem('gs_gh_token'); localStorage.removeItem('gs_gemini_key');
             window.location.reload();
@@ -776,6 +1010,7 @@
         cardContainer.addEventListener('mousedown', handleStart);
         cardContainer.addEventListener('touchstart', handleStart, { passive: false });
 
+>>>>>>> f56677d9eae0ed3678580b3b0da709606f040186
         window.addEventListener('mousemove', handleMove);
         window.addEventListener('mouseup', handleEnd);
         window.addEventListener('touchmove', handleMove, { passive: false }); 
@@ -784,4 +1019,8 @@
         fetchUserStars(true).then(() => fetchTrendingRepos());
     </script>
 </body>
+<<<<<<< HEAD
 </html>
+=======
+</html>
+>>>>>>> f56677d9eae0ed3678580b3b0da709606f040186
