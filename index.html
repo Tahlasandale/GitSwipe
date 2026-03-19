@@ -223,8 +223,14 @@
             </div>
 
             <div class="mb-8">
-                <label class="block text-[10px] font-black uppercase mb-2">Gemini API Key</label>
-                <input id="gemini-key-input" type="password" placeholder="AIzaSy..." class="w-full p-3 border-4 border-black text-sm focus:outline-none focus:bg-indigo-50 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                <label class="block text-[10px] font-black uppercase mb-2">Gemini API Key & Model</label>
+                <div class="flex gap-2 mb-2">
+                    <input id="gemini-key-input" type="password" placeholder="AIzaSy..." class="flex-1 p-3 border-4 border-black text-sm focus:outline-none focus:bg-indigo-50 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                    <button id="load-models-btn" class="bg-white text-black px-4 font-black uppercase text-[10px] border-4 border-black hover:bg-[#00FF00] hover:text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none transition-all">LOAD</button>
+                </div>
+                <select id="gemini-model-select" class="w-full p-3 border-4 border-black text-xs font-bold uppercase focus:outline-none focus:bg-indigo-50 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] appearance-none bg-white cursor-pointer">
+                    <option value="gemini-1.5-flash">gemini-1.5-flash (Default)</option>
+                </select>
                 <p class="text-[9px] text-gray-500 mt-1">Requise pour le chat et l'analyse AI. <a href="https://aistudio.google.com/app/apikey" target="_blank" class="underline hover:text-[#00FF00]">Obtenir une clé</a>.</p>
             </div>
 
@@ -261,6 +267,7 @@
         let fetchingIds = new Set();
         let ghToken = localStorage.getItem('gs_gh_token') || "";
         let geminiKey = localStorage.getItem('gs_gemini_key') || "";
+        let geminiModel = localStorage.getItem('gs_gemini_model') || "gemini-1.5-flash";
         let localVault = JSON.parse(localStorage.getItem('gs_vault') || "[]");
         let remoteStars = [];
         let swipeHistory = [];
@@ -292,6 +299,7 @@
         const tagsModal = document.getElementById('tags-modal');
         const btnUndo = document.getElementById('btn-undo');
         const vaultRefreshIndicator = document.getElementById('vault-loading-indicator');
+        const modelSelect = document.getElementById('gemini-model-select');
 
         // --- Moteur de Chaos ---
         const getChaosParams = () => {
@@ -405,7 +413,44 @@
                 }
             } catch (e) { readmeCache[repo.id] = `<div class="p-10 border-4 border-dashed border-black text-center opacity-30 font-black text-xs">DOCS_NOT_FOUND</div>`; } 
             finally { fetchingIds.delete(repo.id); }
-        }
+        };
+
+        // --- MODEL LOADING ---
+        document.getElementById('load-models-btn').onclick = async () => {
+            const key = document.getElementById('gemini-key-input').value.trim();
+            if (!key) return showToast("API KEY REQUIRED", "bg-red-600");
+            
+            const btn = document.getElementById('load-models-btn');
+            const originalText = btn.innerText;
+            btn.innerText = "...";
+            btn.disabled = true;
+
+            try {
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${key}`);
+                if (!res.ok) throw new Error("INVALID KEY");
+                const data = await res.json();
+                
+                modelSelect.innerHTML = '';
+                // Filter models supporting generation and matching "gemini"
+                const validModels = data.models.filter(m => m.supportedGenerationMethods.includes("generateContent") && m.name.includes("gemini"));
+                
+                validModels.forEach(m => {
+                    const modelId = m.name.replace('models/', '');
+                    const option = document.createElement('option');
+                    option.value = modelId;
+                    option.innerText = modelId;
+                    if (modelId === geminiModel) option.selected = true;
+                    modelSelect.appendChild(option);
+                });
+                
+                showToast("MODELS LOADED", "bg-[#00FF00] text-black");
+            } catch (e) {
+                showToast("API ERROR", "bg-red-600");
+            } finally {
+                btn.innerText = originalText;
+                btn.disabled = false;
+            }
+        };
 
         // --- TAGS MANAGEMENT ---
         const renderTags = () => {
@@ -450,7 +495,7 @@
             try {
                 const samples = sourceRepos.slice(0, 30).map(r => `${r.name}: ${r.description || ''}`).join('\n');
                 const prompt = `Analyze these repositories starred by a developer:\n${samples}\nExtract 8 high-level technical topics or keywords (single words, lowercase) that represent their specific interests (e.g. "rust", "neovim", "devops"). Return ONLY a raw JSON array of strings. No markdown.`;
-                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${geminiKey}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }) });
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${geminiModel}:generateContent?key=${geminiKey}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }) });
                 if (!res.ok) throw new Error("API_ERROR");
                 const data = await res.json();
                 const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
@@ -527,7 +572,7 @@
             addChatMessage("User", q);
             const context = `Tu es un expert en code. Analyse ce code source:\n${currentRepoContext.slice(0, 30000)}...\n(Tronqué si trop long)\n\nHistorique:\n${chatHistory.slice(-4).map(x=>x.role+': '+x.text).join('\n')}\nUtilisateur: ${q}\nRéponds de manière concise, technique, et formatée en Markdown.`;
             try {
-                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${geminiKey}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts: [{ text: context }] }] }) });
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${geminiModel}:generateContent?key=${geminiKey}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts: [{ text: context }] }] }) });
                 if (!res.ok) throw new Error((await res.json()).error?.message || "API Error");
                 const data = await res.json();
                 const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "No response";
