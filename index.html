@@ -1,242 +1,342 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GitSwipe - Ultimate.bin</title>
+    
+    <!-- PWA & Mobile Meta Tags -->
+    <meta name="theme-color" content="#050505">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="GitSwipe">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon.png">
+    
+    <title>GitSwipe - Liquid Glass</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/a11y-dark.min.css">
+    <!-- Thème Highlight.js adapté au Glassmorphism sombre -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         
-        body { font-family: 'Space Mono', monospace; overflow: hidden; background-color: white; color: black; touch-action: pan-y; }
-        
-        .custom-scrollbar::-webkit-scrollbar { width: 10px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: white; border-left: 4px solid black; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: black; border: 2px solid white; }
-        
-        /* Markdown Styles */
-        .markdown-body { font-size: 12px; line-height: 1.5; overflow-x: hidden !important; width: 100% !important; }
-        .markdown-body * { max-width: 100% !important; overflow-wrap: break-word !important; word-break: break-word !important; }
-        .markdown-body h1, .markdown-body h2 { font-weight: 900; text-transform: uppercase; border-bottom: 4px solid #00FF00; margin: 20px 0 10px; }
-        .markdown-body code { background: #00FF00; color: black; padding: 2px 4px; font-weight: bold; }
-        .markdown-body pre { background: #111; color: #eee; padding: 15px; border: 4px solid black; margin: 15px 0; overflow-x: auto; }
-        .markdown-body pre code { background: transparent; color: inherit; padding: 0; font-weight: normal; }
-        .markdown-body ul { list-style: square; padding-left: 1.5rem; }
-        
-        /* Anti-Drag & Select Fixes */
-        img, a, .no-select {
-            -webkit-user-drag: none;
-            -khtml-user-drag: none;
-            -moz-user-drag: none;
-            -o-user-drag: none;
-            user-drag: none;
-            user-select: none;
-            -webkit-user-select: none;
+        body { 
+            font-family: 'Inter', system-ui, sans-serif; 
+            overflow: hidden; 
+            background-color: #050505; 
+            color: #ffffff; 
+            touch-action: pan-y;
+            margin: 0;
+            padding: 0;
         }
 
-        .active-card { 
-            z-index: 10; 
-            transition: transform 0.2s cubic-bezier(0.19, 1, 0.22, 1); 
-            will-change: transform; 
-            cursor: grab;
+        /* --- LIQUID BACKGROUND ANIMATION --- */
+        .liquid-bg {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: -1;
+            background: #0a0a0a;
+            overflow: hidden;
         }
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.6;
+            animation: move 20s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .blob-1 { top: -10%; left: -10%; width: 50vw; height: 50vw; background: #4f46e5; animation-delay: 0s; }
+        .blob-2 { bottom: -20%; right: -10%; width: 60vw; height: 60vw; background: #0ea5e9; animation-delay: -5s; }
+        .blob-3 { top: 30%; left: 40%; width: 40vw; height: 40vw; background: #8b5cf6; animation-delay: -10s; }
+        .blob-4 { bottom: 10%; left: 10%; width: 45vw; height: 45vw; background: #ec4899; animation-delay: -15s; opacity: 0.4; }
+
+        @keyframes move {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(10%, 15%) scale(1.1); }
+            100% { transform: translate(-10%, -10%) scale(0.9); }
+        }
+
+        /* --- GLASSMORPHISM UTILS --- */
+        .glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        }
+        .glass-panel {
+            background: rgba(20, 20, 25, 0.5);
+            backdrop-filter: blur(32px);
+            -webkit-backdrop-filter: blur(32px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.4);
+        }
+        .glass-input {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: white;
+            transition: all 0.3s ease;
+        }
+        .glass-input:focus {
+            background: rgba(0, 0, 0, 0.4);
+            border-color: rgba(14, 165, 233, 0.5);
+            box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.2);
+        }
+        .glass-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        .glass-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        .glass-btn:active { transform: translateY(1px); }
+
+        /* --- SCROLLBAR --- */
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.4); }
+        
+        /* --- MARKDOWN STYLES FOR DARK GLASS --- */
+        .markdown-body { font-size: 14px; line-height: 1.6; color: rgba(255,255,255,0.85); overflow-x: hidden !important; width: 100% !important; }
+        .markdown-body * { max-width: 100% !important; overflow-wrap: break-word !important; word-break: break-word !important; }
+        .markdown-body h1, .markdown-body h2 { font-weight: 700; color: #fff; border-bottom: 1px solid rgba(255,255,255,0.1); margin: 24px 0 16px; padding-bottom: 8px; }
+        .markdown-body h3, .markdown-body h4 { font-weight: 600; color: #fff; margin: 16px 0 8px; }
+        .markdown-body code { background: rgba(0,0,0,0.3); color: #38bdf8; padding: 2px 6px; border-radius: 6px; font-family: monospace; font-size: 0.9em; }
+        .markdown-body pre { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 16px; margin: 16px 0; overflow-x: auto; box-shadow: inset 0 2px 10px rgba(0,0,0,0.2); }
+        .markdown-body pre code { background: transparent; color: inherit; padding: 0; }
+        .markdown-body ul, .markdown-body ol { padding-left: 1.5rem; margin-bottom: 16px; }
+        .markdown-body a { color: #38bdf8; text-decoration: none; }
+        .markdown-body a:hover { text-decoration: underline; }
+        .markdown-body img { border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); }
+        .markdown-body blockquote { border-left: 4px solid #38bdf8; margin: 0; padding-left: 16px; color: rgba(255,255,255,0.6); background: rgba(255,255,255,0.02); padding: 12px 16px; border-radius: 0 12px 12px 0; }
+        
+        /* --- SWIPE CARD SYSTEM --- */
+        img, a, .no-select { user-select: none; -webkit-user-drag: none; }
+        .active-card { z-index: 10; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); will-change: transform; cursor: grab; }
         .active-card:active { cursor: grabbing; }
 
         @keyframes slideIn {
-            from { transform: translate(-1000px, 0) rotate(-30deg); opacity: 0; }
-            to { transform: translate(0, 0) rotate(0); opacity: 1; }
+            from { transform: translate(-1000px, 0) rotate(-15deg) scale(0.9); opacity: 0; filter: blur(10px); }
+            to { transform: translate(0, 0) rotate(0) scale(1); opacity: 1; filter: blur(0); }
         }
-        .card-undo-anim { animation: slideIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        .card-undo-anim { animation: slideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
 
-        /* Analyzer Specifics */
-        .msg-user { background-color: #00FF00; color: black; border: 2px solid black; align-self: flex-end; margin-left: 20%; }
-        .msg-ai { background-color: white; color: black; border: 2px solid black; align-self: flex-start; margin-right: 10%; }
-        .typing-cursor::after { content: '▋'; animation: blink 1s step-start infinite; }
-        @keyframes blink { 50% { opacity: 0; } }
+        /* --- CHAT SYSTEM --- */
+        .msg-user { background: linear-gradient(135deg, #0ea5e9, #3b82f6); color: white; align-self: flex-end; margin-left: 15%; border-radius: 16px 16px 0 16px; box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3); }
+        .msg-ai { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); color: white; align-self: flex-start; margin-right: 15%; border-radius: 16px 16px 16px 0; }
+        
+        /* Soft pulsing for loading elements */
+        .glass-pulse { animation: glassPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        @keyframes glassPulse { 0%, 100% { opacity: 1; border-color: rgba(255,255,255,0.1); } 50% { opacity: .7; border-color: rgba(56,189,248,0.5); box-shadow: 0 0 15px rgba(56,189,248,0.2); } }
     </style>
 </head>
 <body class="flex flex-col h-screen select-none">
 
-    <!-- Header -->
-    <header class="bg-black text-white border-b-4 border-black px-4 py-3 flex justify-between items-center z-[60] shrink-0 shadow-[0px_4px_0px_0px_rgba(0,0,0,1)]">
+    <div class="liquid-bg">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+        <div class="blob blob-4"></div>
+    </div>
+
+    <header class="glass mx-4 my-3 rounded-2xl px-5 py-3 flex justify-between items-center z-[60] shrink-0">
         <div class="flex items-center gap-3">
-            <div class="bg-[#00FF00] p-1 border-2 border-white">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="3"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg>
+            <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-cyan-400 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/30">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg>
             </div>
-            <h1 class="font-black text-lg tracking-tighter uppercase italic hidden sm:block">GitSwipe</h1>
+            <h1 class="font-bold text-lg tracking-tight hidden sm:block text-transparent bg-clip-text bg-gradient-to-r from-white to-white/60">GitSwipe</h1>
         </div>
         
-        <nav class="flex gap-1.5">
-            <button id="btn-trending" title="Trending" class="bg-[#00FF00] text-black border-2 border-white p-2 shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] translate-x-[-1px] translate-y-[-1px] transition-all">
-                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        <nav class="flex gap-2">
+            <button id="btn-trending" title="Trending" class="glass-btn p-2.5 rounded-xl text-white">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
             </button>
-            <button id="btn-random" title="Random Chaos" class="hover:bg-white hover:text-black border-2 border-white p-2 transition-all">
-                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><circle cx="15.5" cy="8.5" r="1.5"/><circle cx="8.5" cy="15.5" r="1.5"/><circle cx="15.5" cy="15.5" r="1.5"/><circle cx="12" cy="12" r="1.5"/></svg>
+            <button id="btn-random" title="Discover Chaos" class="glass-btn p-2.5 rounded-xl text-white/70">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><circle cx="15.5" cy="8.5" r="1.5"/><circle cx="8.5" cy="15.5" r="1.5"/><circle cx="15.5" cy="15.5" r="1.5"/><circle cx="12" cy="12" r="1.5"/></svg>
             </button>
-            <button id="btn-search" title="Rechercher" class="hover:bg-white hover:text-black border-2 border-white p-2 transition-all">
-                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+            <button id="btn-search" title="Search" class="glass-btn p-2.5 rounded-xl text-white/70">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
             </button>
-            <button id="btn-vault" title="Le Coffre" class="hover:bg-white hover:text-black border-2 border-white p-2 transition-all">
-                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M21 8H3V6a2 2 0 012-2h14a2 2 0 012 2v2zM21 8v10a2 2 0 01-2 2H5a2 2 0 01-2-2V8h18zM12 12v4M10 12h4"/></svg>
+            <button id="btn-vault" title="Vault" class="glass-btn p-2.5 rounded-xl text-white/70">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M21 8H3V6a2 2 0 012-2h14a2 2 0 012 2v2zM21 8v10a2 2 0 01-2 2H5a2 2 0 01-2-2V8h18zM12 12v4M10 12h4"/></svg>
             </button>
-            <button id="btn-config" title="Configuration" class="bg-white text-black border-2 border-white p-2 hover:bg-[#00FF00] transition-colors">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="square" stroke-linejoin="miter">
+            <button id="btn-config" title="Settings" class="glass-btn p-2.5 rounded-xl text-white/70">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M4 21v-7"></path><path d="M4 10V3"></path><path d="M12 21v-9"></path><path d="M12 8V3"></path><path d="M20 21v-5"></path><path d="M20 12V3"></path><path d="M1 14h6"></path><path d="M9 8h6"></path><path d="M17 16h6"></path>
                 </svg>
             </button>
         </nav>
     </header>
 
-    <main class="relative flex-1 flex flex-col items-center p-4 overflow-hidden">
+    <main class="relative flex-1 flex flex-col items-center p-4 overflow-hidden w-full">
         
-        <!-- View: Discover -->
+        <!-- View: Discover (Cards) -->
         <div id="view-discover" class="w-full h-full flex flex-col items-center">
-            <div id="card-container" class="relative w-full max-w-[420px] h-[78vh] mt-2">
-                 <div class="flex flex-col items-center justify-center h-full gap-4">
-                    <div class="w-12 h-12 border-4 border-black border-t-[#00FF00] animate-spin"></div>
-                    <p class="font-black uppercase text-[10px] tracking-widest italic opacity-30 italic">Initializing_Deck...</p>
+            <div id="card-container" class="relative w-full max-w-[420px] h-[75vh] mt-2 perspective-1000">
+                 <!-- Empty State Loading -->
+                 <div class="flex flex-col items-center justify-center h-full gap-4 glass rounded-3xl w-full">
+                    <div class="w-12 h-12 rounded-full border-2 border-white/20 border-t-cyan-400 animate-spin"></div>
+                    <p class="text-xs tracking-widest text-white/50 font-medium">Initializing Stream...</p>
                 </div>
             </div>
-            <div id="feedback" class="hidden absolute top-1/2 -translate-y-1/2 z-50 px-10 py-5 border-4 border-black font-black text-4xl uppercase shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] pointer-events-none"></div>
+
+            <!-- Feedback Bubble -->
+            <div id="feedback" class="hidden absolute top-1/2 -translate-y-1/2 z-50 px-10 py-4 rounded-full font-bold text-2xl tracking-widest pointer-events-none transition-all duration-200"></div>
+
+            <!-- Swipe Buttons -->
             <div class="absolute bottom-6 flex items-center gap-8 z-[40]">
-                <button onclick="completeSwipe('left')" class="w-16 h-16 bg-white border-4 border-black text-black flex items-center justify-center hover:bg-black hover:text-white shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:shadow-none transition-all"><svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="4" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
-                <button id="btn-undo" onclick="undoLastSwipe()" class="w-12 h-12 bg-white border-4 border-black text-black flex items-center justify-center hover:bg-[#00FF00] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none transition-all opacity-30 cursor-not-allowed"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M3 10h10a8 8 0 0 1 8 8v2M3 10l6 6m-6-6l6-6"/></svg></button>
-                <button onclick="completeSwipe('right')" class="w-16 h-16 bg-[#00FF00] border-4 border-black text-black flex items-center justify-center hover:bg-black hover:text-[#00FF00] shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:shadow-none transition-all"><svg width="32" height="32" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></button>
+                <button onclick="completeSwipe('left')" class="w-16 h-16 rounded-full glass flex items-center justify-center text-rose-400 hover:bg-rose-500/20 hover:border-rose-500/50 hover:shadow-[0_0_20px_rgba(244,63,94,0.3)] transition-all transform hover:scale-105 active:scale-95">
+                    <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                </button>
+                <button id="btn-undo" onclick="undoLastSwipe()" class="w-12 h-12 rounded-full glass flex items-center justify-center text-amber-400 hover:bg-amber-500/20 hover:border-amber-500/50 transition-all transform hover:scale-105 active:scale-95 opacity-30 cursor-not-allowed">
+                    <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M3 10h10a8 8 0 0 1 8 8v2M3 10l6 6m-6-6l6-6"/></svg>
+                </button>
+                <button onclick="completeSwipe('right')" class="w-16 h-16 rounded-full glass flex items-center justify-center text-emerald-400 hover:bg-emerald-500/20 hover:border-emerald-500/50 hover:shadow-[0_0_20px_rgba(16,185,129,0.3)] transition-all transform hover:scale-105 active:scale-95">
+                    <svg width="28" height="28" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                </button>
             </div>
         </div>
 
         <!-- View: Vault -->
-        <div id="view-vault" class="hidden w-full max-w-2xl overflow-y-auto custom-scrollbar h-full px-2 pt-4">
-            <div class="flex justify-between items-end mb-8 border-b-8 border-[#00FF00] px-2 pb-2">
-                <h2 id="vault-title" class="text-2xl font-black text-black uppercase italic leading-none">Vault</h2>
-                <span id="vault-loading-indicator" class="hidden text-[10px] font-black uppercase text-black/30 animate-pulse italic">Refreshing...</span>
+        <div id="view-vault" class="hidden w-full max-w-2xl overflow-y-auto custom-scrollbar h-full px-2 pt-4 pb-20">
+            <div class="flex justify-between items-end mb-6 px-2">
+                <h2 id="vault-title" class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">Vault</h2>
+                <span id="vault-loading-indicator" class="hidden text-[10px] uppercase text-cyan-400 tracking-widest animate-pulse">Syncing...</span>
             </div>
-            <div id="vault-list" class="space-y-4 pb-32"></div>
+            <div id="vault-list" class="space-y-3"></div>
         </div>
 
         <!-- View: Analyzer (Gemini Chat) -->
-        <div id="view-analyzer" class="hidden absolute inset-0 z-[70] bg-white flex flex-col h-full">
-            <div class="bg-black text-[#00FF00] p-4 flex justify-between items-center border-b-4 border-black shrink-0">
+        <div id="view-analyzer" class="hidden absolute inset-0 z-[70] glass-panel flex flex-col h-full backdrop-blur-3xl m-2 rounded-3xl overflow-hidden border border-white/10 shadow-2xl">
+            <div class="bg-white/5 border-b border-white/10 p-4 flex justify-between items-center shrink-0">
                 <div class="flex items-center gap-3 overflow-hidden">
-                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
-                    <h2 id="analyzer-title" class="font-black text-lg uppercase truncate tracking-tighter">REPO_ANALYZER</h2>
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-purple-500 to-indigo-500 flex items-center justify-center">
+                        <svg width="16" height="16" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+                    </div>
+                    <h2 id="analyzer-title" class="font-semibold text-sm truncate">REPO_ANALYZER</h2>
                 </div>
-                <button onclick="closeAnalyzer()" class="bg-white text-black px-3 py-1 font-black uppercase text-xs border-2 border-[#00FF00] hover:bg-[#00FF00]">Exit</button>
+                <button onclick="closeAnalyzer()" class="glass-btn px-4 py-1.5 rounded-full text-xs font-medium hover:bg-red-500/20 hover:text-red-400 hover:border-red-500/50">Close</button>
             </div>
             
-            <div id="analyzer-loading" class="hidden flex-1 flex flex-col items-center justify-center p-8 text-center bg-white">
-                <div class="w-full max-w-xs bg-black border-4 border-black h-6 mb-4 relative">
-                    <div id="analyzer-progress" class="bg-[#00FF00] h-full w-0 transition-all duration-300"></div>
+            <div id="analyzer-loading" class="hidden flex-1 flex flex-col items-center justify-center p-8 text-center">
+                <div class="w-full max-w-xs h-2 bg-white/10 rounded-full overflow-hidden mb-4 border border-white/5">
+                    <div id="analyzer-progress" class="h-full bg-gradient-to-r from-cyan-400 to-blue-500 w-0 transition-all duration-300"></div>
                 </div>
-                <p id="analyzer-status" class="font-black text-xs uppercase animate-pulse">Scanning_File_Tree...</p>
-                <p id="analyzer-details" class="text-[10px] font-mono mt-2 text-gray-500"></p>
+                <p id="analyzer-status" class="text-sm font-medium animate-pulse text-cyan-300">Scanning Architecture...</p>
+                <p id="analyzer-details" class="text-xs mt-2 text-white/40"></p>
             </div>
 
-            <div id="analyzer-chat" class="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar bg-[#f4f4f4] relative">
-                <!-- Chat messages go here -->
-                <div class="p-4 border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)]">
-                    <p class="font-bold text-xs uppercase mb-2 text-[#00FF00] bg-black inline-block px-1">SYSTEM</p>
-                    <p class="text-xs">Initialisation de l'analyseur. Posez une question sur le code pour commencer.</p>
+            <div id="analyzer-chat" class="flex-1 overflow-y-auto p-5 space-y-4 custom-scrollbar">
+                <div class="p-4 glass rounded-2xl max-w-[85%]">
+                    <div class="flex items-center gap-2 mb-2">
+                        <div class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></div>
+                        <p class="font-semibold text-[10px] uppercase text-cyan-400 tracking-wider">System</p>
+                    </div>
+                    <p class="text-sm text-white/80">Analyzer initialized. Ready for technical queries.</p>
                 </div>
             </div>
 
-            <div class="p-4 bg-white border-t-4 border-black shrink-0">
-                <div class="flex gap-2">
-                    <input id="chat-input" type="text" placeholder="Query codebase..." class="flex-1 p-3 border-4 border-black font-mono text-sm focus:outline-none focus:border-[#00FF00] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-                    <button onclick="sendMessage()" id="btn-send" class="bg-black text-[#00FF00] px-6 py-3 font-black uppercase text-xs border-4 border-black hover:bg-[#00FF00] hover:text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none transition-all">Send</button>
+            <div class="p-4 bg-black/20 border-t border-white/10 shrink-0 backdrop-blur-md">
+                <div class="flex gap-2 relative">
+                    <input id="chat-input" type="text" placeholder="Ask about the codebase..." class="flex-1 glass-input rounded-full py-3 px-5 text-sm">
+                    <button onclick="sendMessage()" id="btn-send" class="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white px-6 py-3 rounded-full font-bold text-sm transition-all shadow-[0_0_15px_rgba(14,165,233,0.4)] active:scale-95">Send</button>
                 </div>
             </div>
         </div>
     </main>
 
     <!-- Search Modal -->
-    <div id="search-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-sm p-4">
-        <div class="bg-white border-4 border-black p-8 max-w-md w-full shadow-[15px_15px_0px_0px_rgba(0,255,0,1)]">
-            <h3 class="font-black text-2xl uppercase mb-6 italic underline decoration-[#00FF00]">Search.exe</h3>
-            <p class="text-[10px] font-bold mb-4 text-black/60 leading-relaxed uppercase">
-                Recherchez un repo ("user/repo") ou des mots-clés ("linux ricing").
-            </p>
-            <input id="search-input" type="text" placeholder="Query..." class="w-full p-4 border-4 border-black mb-6 font-bold text-sm focus:outline-none focus:bg-indigo-50 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+    <div id="search-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+        <div class="glass-panel p-8 max-w-md w-full rounded-3xl border border-white/20 shadow-2xl transform scale-100 transition-all">
+            <h3 class="font-bold text-2xl mb-2 text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400">Search Hub</h3>
+            <p class="text-xs mb-6 text-white/50">Enter a repo "owner/name" or keywords (e.g., "rust terminal tool").</p>
+            
+            <input id="search-input" type="text" placeholder="Query parameters..." class="w-full glass-input rounded-xl p-4 mb-6 text-sm">
+            
             <div class="flex flex-col gap-3">
-                <button id="btn-do-search" class="w-full bg-[#00FF00] border-4 border-black py-3 font-black uppercase text-xs shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] active:shadow-none transition-all">Execute_Search</button>
-                <button id="close-search" class="w-full bg-black text-white py-3 font-black uppercase text-xs">Cancel</button>
+                <button id="btn-do-search" class="w-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl py-3.5 font-bold text-sm hover:shadow-[0_0_20px_rgba(14,165,233,0.4)] transition-all">Execute Search</button>
+                <button id="close-search" class="w-full glass-btn rounded-xl py-3.5 text-sm font-medium text-white/70">Cancel</button>
             </div>
         </div>
     </div>
 
     <!-- Tags Editor Modal -->
-    <div id="tags-modal" class="hidden fixed inset-0 z-[110] flex items-center justify-center bg-black/90 backdrop-blur-sm p-4">
-        <div class="bg-white border-4 border-black p-8 max-w-md w-full shadow-[15px_15px_0px_0px_rgba(0,255,0,1)] flex flex-col h-[600px]">
-            <h3 class="font-black text-2xl uppercase mb-6 italic underline decoration-[#00FF00]">Chaos_Matrix</h3>
-            <p class="text-[10px] font-bold mb-4 text-black/60 leading-relaxed uppercase">
-                Gérez vos tags ou générez-les avec l'IA.
-            </p>
+    <div id="tags-modal" class="hidden fixed inset-0 z-[110] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+        <div class="glass-panel p-6 max-w-md w-full rounded-3xl border border-white/20 shadow-2xl flex flex-col h-[80vh] max-h-[600px]">
+            <h3 class="font-bold text-2xl mb-2 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">Chaos Matrix</h3>
+            <p class="text-xs mb-6 text-white/50">Tune the algorithm. Define keywords for Random discovery.</p>
             
-            <button id="ai-tags-btn" class="w-full mb-6 bg-black text-[#00FF00] border-4 border-black py-3 font-black uppercase text-xs shadow-[3px_3px_0px_0px_rgba(0,0,0,0.5)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all flex items-center justify-center gap-2">
-                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10H12V2z"/><path d="M12 2a10 10 0 0 1 10 10"/><path d="M12 22a10 10 0 0 1-10-10"/></svg>
-                AI_Scan_Favorites
+            <button id="ai-tags-btn" class="w-full mb-6 glass-btn border-purple-500/30 hover:border-purple-500/80 hover:bg-purple-500/10 text-purple-300 rounded-xl py-3.5 font-bold text-sm transition-all flex items-center justify-center gap-2">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10H12V2z"/><path d="M12 2a10 10 0 0 1 10 10"/><path d="M12 22a10 10 0 0 1-10-10"/></svg>
+                AI Profile Scan
             </button>
 
             <div class="flex gap-2 mb-4">
-                <input id="new-tag-input" type="text" placeholder="New tag (ex: docker)..." class="flex-1 p-2 border-4 border-black font-bold text-xs focus:outline-none focus:bg-indigo-50">
-                <button id="add-tag-btn" class="bg-white text-black px-4 py-2 font-black uppercase text-xs border-4 border-black hover:bg-[#00FF00]">ADD</button>
+                <input id="new-tag-input" type="text" placeholder="Add tag (e.g. docker)..." class="flex-1 glass-input rounded-xl px-4 py-2 text-sm">
+                <button id="add-tag-btn" class="bg-white/10 hover:bg-white/20 border border-white/20 text-white rounded-xl px-5 py-2 font-medium text-sm transition-all">Add</button>
             </div>
 
-            <div id="tags-list" class="flex-1 overflow-y-auto border-4 border-black p-4 bg-[#f4f4f4] flex flex-wrap content-start gap-2 custom-scrollbar mb-4">
+            <div id="tags-list" class="flex-1 overflow-y-auto bg-black/20 rounded-xl border border-white/5 p-4 flex flex-wrap content-start gap-2 custom-scrollbar mb-4">
                 <!-- Tags rendered here -->
             </div>
 
             <div class="flex gap-3 shrink-0">
-                <button id="reset-tags" class="flex-1 bg-white border-4 border-black py-2 font-black uppercase text-[10px] text-red-600 hover:bg-red-50">Reset</button>
-                <button id="close-tags" class="flex-1 bg-black text-white py-3 font-black uppercase text-xs">Save & Exit</button>
+                <button id="reset-tags" class="flex-1 glass-btn rounded-xl py-3 text-xs font-medium text-rose-400 hover:bg-rose-500/10 hover:border-rose-500/30">Reset Defaults</button>
+                <button id="close-tags" class="flex-1 bg-white text-black rounded-xl py-3 font-bold text-sm hover:bg-white/90">Save & Exit</button>
             </div>
         </div>
     </div>
 
     <!-- Config Modal -->
-    <div id="config-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-sm p-4">
-        <div class="bg-white border-4 border-black p-8 max-w-md w-full shadow-[15px_15px_0px_0px_rgba(0,255,0,1)] relative">
+    <div id="config-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+        <div class="glass-panel p-8 max-w-md w-full rounded-3xl border border-white/20 shadow-2xl relative">
             
-            <div class="flex justify-between items-center mb-6 border-b-4 border-[#00FF00] pb-2">
-                <h3 class="font-black text-2xl uppercase italic">Config.sys</h3>
-                
-                <!-- Bouton pour ouvrir l'éditeur de tags -->
-                <button id="open-tags-btn" class="border-2 border-black bg-white p-2 hover:bg-[#00FF00] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:shadow-none transition-all" title="Edit Random Tags">
-                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="font-bold text-2xl text-white">System Config</h3>
+                <button id="open-tags-btn" class="glass-btn p-2.5 rounded-full text-purple-400 hover:text-purple-300 hover:bg-purple-500/20 hover:border-purple-500/50 transition-all" title="Edit Random Tags">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
                 </button>
             </div>
             
-            <div class="mb-6">
-                <label class="block text-[10px] font-black uppercase mb-2">GitHub Token (Classic)</label>
-                <input id="gh-token-input" type="password" placeholder="ghp_XXXXXXXXXXXXXXXXXXXX" class="w-full p-3 border-4 border-black text-sm focus:outline-none focus:bg-indigo-50 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-                <p class="text-[9px] text-gray-500 mt-1">Requis pour Starrer et charger le code. <a href="https://github.com/settings/tokens" target="_blank" class="underline hover:text-[#00FF00]">Obtenir un token</a>.</p>
+            <div class="mb-5">
+                <label class="block text-xs font-medium text-white/70 mb-2">GitHub Token (Classic)</label>
+                <input id="gh-token-input" type="password" placeholder="ghp_XXXXXXXXXXXXXXXXXXXX" class="w-full glass-input rounded-xl p-3 text-sm">
+                <p class="text-[10px] text-white/40 mt-2">Required for direct starring and bypassing limits. <a href="https://github.com/settings/tokens" target="_blank" class="text-cyan-400 hover:underline">Get Token</a></p>
             </div>
 
             <div class="mb-8">
-                <label class="block text-[10px] font-black uppercase mb-2">Gemini API Key & Model</label>
-                <div class="flex gap-2 mb-2">
-                    <input id="gemini-key-input" type="password" placeholder="AIzaSy..." class="flex-1 p-3 border-4 border-black text-sm focus:outline-none focus:bg-indigo-50 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-                    <button id="load-models-btn" class="bg-white text-black px-4 font-black uppercase text-[10px] border-4 border-black hover:bg-[#00FF00] hover:text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none transition-all">LOAD</button>
+                <label class="block text-xs font-medium text-white/70 mb-2">Gemini API Key & Model</label>
+                <div class="flex gap-2 mb-3">
+                    <input id="gemini-key-input" type="password" placeholder="AIzaSy..." class="flex-1 glass-input rounded-xl p-3 text-sm">
+                    <button id="load-models-btn" class="glass-btn rounded-xl px-4 text-xs font-medium text-white hover:bg-white/20">Load</button>
                 </div>
-                <select id="gemini-model-select" class="w-full p-3 border-4 border-black text-xs font-bold uppercase focus:outline-none focus:bg-indigo-50 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] appearance-none bg-white cursor-pointer">
-                    <option value="gemini-1.5-flash">gemini-1.5-flash (Default)</option>
-                </select>
-                <p class="text-[9px] text-gray-500 mt-2">Requise pour le chat AI. <a href="https://aistudio.google.com/app/apikey" target="_blank" class="underline hover:text-[#00FF00]">Obtenir une clé</a>.</p>
+                <div class="relative">
+                    <select id="gemini-model-select" class="w-full glass-input rounded-xl p-3 text-sm appearance-none cursor-pointer pr-10">
+                        <option value="gemini-1.5-flash" class="bg-gray-900 text-white">gemini-1.5-flash (Default)</option>
+                    </select>
+                    <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-white/50">
+                        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+                    </div>
+                </div>
+                <p class="text-[10px] text-white/40 mt-2">Required for AI Repo Chat. <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-cyan-400 hover:underline">Get Key</a></p>
             </div>
 
             <div class="flex flex-col gap-3">
-                <button id="save-config" class="w-full bg-[#00FF00] border-4 border-black py-3 font-black uppercase text-xs shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] active:shadow-none transition-all">Save_Config</button>
-                <button id="clear-config" class="w-full bg-white border-4 border-black py-2 font-black uppercase text-[10px] text-red-600 hover:bg-red-50">Factory_Reset</button>
-                <button id="close-modal" class="w-full bg-black text-white py-3 font-black uppercase text-xs">Exit</button>
+                <button id="save-config" class="w-full bg-white text-black rounded-xl py-3.5 font-bold text-sm hover:bg-white/90 transition-all">Save Configuration</button>
+                <button id="clear-config" class="w-full glass-btn rounded-xl py-2.5 text-xs font-medium text-rose-400 hover:bg-rose-500/10 border-transparent">Factory Reset</button>
+                <button id="close-modal" class="w-full glass-btn rounded-xl py-3.5 text-sm font-medium text-white/70 mt-2">Close</button>
             </div>
         </div>
     </div>
 
     <script>
-        // --- State ---
+        // --- State Management ---
         let repos = [];
         let currentIndex = 0;
         let page = 1;
@@ -250,19 +350,15 @@
         let localVault = JSON.parse(localStorage.getItem('gs_vault') || "[]");
         let remoteStars = [];
         let swipeHistory = []; 
-        let currentRepoContext = ""; // For Chat
-        let chatHistory = []; // For Chat
+        let currentRepoContext = ""; 
+        let chatHistory = []; 
 
-        // Default & Loaded Tags (Safe Load)
         const defaultTags = ['web', 'tool', 'game', 'ai', 'cli', 'minimal', 'automation', 'ricing', 'tui', 'chat', 'distro', 'xfce', 'window manager', 'hyprland', 'dotfiles', 'programming language'];
         let chaosTags = [];
-        try {
-            chaosTags = JSON.parse(localStorage.getItem('gs_chaos_tags')) || defaultTags;
-        } catch (e) {
-            chaosTags = defaultTags;
-        }
+        try { chaosTags = JSON.parse(localStorage.getItem('gs_chaos_tags')) || defaultTags; } 
+        catch (e) { chaosTags = defaultTags; }
 
-        // UI Ref
+        // --- DOM Elements ---
         const cardContainer = document.getElementById('card-container');
         const vaultList = document.getElementById('vault-list');
         const viewDiscover = document.getElementById('view-discover');
@@ -280,7 +376,7 @@
         const vaultRefreshIndicator = document.getElementById('vault-loading-indicator');
         const modelSelect = document.getElementById('gemini-model-select');
 
-        // --- Moteur de Chaos ---
+        // --- Core Helpers ---
         const getChaosParams = () => {
             const randomKeyword = chaosTags[Math.floor(Math.random() * chaosTags.length)];
             const r = Math.random();
@@ -293,18 +389,26 @@
             return { q: `created:>${date.toISOString().split('T')[0]} stars:>100`, sort: 'stars' };
         };
 
-        // --- Main Functions ---
         async function fetchGithub(url, method = 'GET', isHtml = false) {
             const headers = isHtml ? { 'Accept': 'application/vnd.github.html' } : {};
             if (ghToken) headers['Authorization'] = `token ${ghToken}`;
             return await fetch(url, { method, headers });
         }
 
+        const showToast = (msg, isError = false) => { 
+            const toast = document.createElement('div'); 
+            toast.className = `fixed bottom-24 left-1/2 -translate-x-1/2 px-6 py-3 rounded-full font-medium text-xs z-[200] backdrop-blur-xl border transition-all ${isError ? 'bg-rose-500/20 border-rose-500/50 text-rose-100 shadow-[0_0_15px_rgba(244,63,94,0.3)]' : 'bg-white/10 border-white/20 text-white shadow-[0_8px_32px_rgba(0,0,0,0.3)]'}`; 
+            toast.innerText = msg; 
+            document.body.appendChild(toast); 
+            setTimeout(() => { toast.style.opacity = '0'; setTimeout(()=>toast.remove(), 300); }, 2000); 
+        };
+
+        // --- App Logic ---
         async function fetchTrendingRepos(reset = false) {
             if (isLoading && !reset) return;
             if (reset) {
                 repos = []; currentIndex = 0; page = 1;
-                cardContainer.innerHTML = `<div class="flex flex-col items-center justify-center h-full gap-4"><div class="w-12 h-12 border-4 border-black border-t-[#00FF00] animate-spin"></div><p class="font-black uppercase text-[10px] tracking-widest italic opacity-20">Loading_${mode}...</p></div>`;
+                cardContainer.innerHTML = `<div class="flex flex-col items-center justify-center h-full gap-4 glass rounded-3xl w-full"><div class="w-10 h-10 rounded-full border-2 border-white/20 border-t-cyan-400 animate-spin"></div><p class="text-xs text-white/50 tracking-widest font-medium">Fetching Data...</p></div>`;
             }
             isLoading = true;
             try {
@@ -316,17 +420,16 @@
                 const filtered = data.items.filter(r => !starredIds.has(r.id)).sort(() => mode === 'random' ? Math.random() - 0.5 : 0);
                 repos = [...repos, ...filtered];
                 renderCurrentCard();
-            } catch (err) { showToast(err.message === "LIMIT" ? "API LIMIT" : "ERROR", "bg-red-600"); } 
+            } catch (err) { showToast(err.message === "LIMIT" ? "API Rate Limit. Add Token." : "Network Error", true); } 
             finally { isLoading = false; }
         }
 
         async function executeSearch(rawQuery) {
             searchModal.classList.add('hidden');
-            mode = 'search';
-            repos = []; currentIndex = 0;
+            mode = 'search'; repos = []; currentIndex = 0;
             updateNavStyles(btnSearch);
             viewDiscover.classList.remove('hidden'); viewVault.classList.add('hidden');
-            cardContainer.innerHTML = `<div class="flex flex-col items-center justify-center h-full gap-4"><div class="w-12 h-12 border-4 border-black border-t-[#00FF00] animate-spin"></div><p class="font-black uppercase text-[10px] tracking-widest italic">Deep_Scanning...</p></div>`;
+            cardContainer.innerHTML = `<div class="flex flex-col items-center justify-center h-full gap-4 glass rounded-3xl w-full"><div class="w-10 h-10 rounded-full border-2 border-white/20 border-t-cyan-400 animate-spin"></div><p class="text-xs text-white/50 tracking-widest font-medium">Scanning...</p></div>`;
             try {
                 if (rawQuery.includes('/') && !rawQuery.includes(' ')) {
                     const res = await fetchGithub(`https://api.github.com/repos/${rawQuery}`);
@@ -350,8 +453,8 @@
                 } else { repos = data.items; }
                 renderCurrentCard();
             } catch (err) {
-                showToast(err.message === "NO_RESULTS" ? "NO REPOS FOUND" : "SEARCH ERROR", "bg-red-600");
-                cardContainer.innerHTML = `<div class="flex flex-col items-center justify-center h-full gap-4"><p class="font-black uppercase text-xl">404</p><p class="text-xs uppercase">No Results Found</p></div>`;
+                showToast(err.message === "NO_RESULTS" ? "No repositories found." : "Search Error", true);
+                cardContainer.innerHTML = `<div class="flex flex-col items-center justify-center h-full gap-4 glass rounded-3xl w-full"><svg width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.5" class="text-white/30" viewBox="0 0 24 24"><path d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg><p class="text-sm text-white/50">404 - Not Found</p></div>`;
             }
         }
 
@@ -376,7 +479,7 @@
                 const url = `https://api.github.com/user/starred/${repo.owner.login}/${repo.name}`;
                 const res = await fetchGithub(url, action === 'star' ? 'PUT' : 'DELETE');
                 if (res.status === 204) { await fetchUserStars(true); return true; }
-            } catch (e) { showToast("SYNC_FAILED", "bg-red-500"); }
+            } catch (e) { showToast("Sync Failed", true); }
             return false;
         }
 
@@ -390,184 +493,87 @@
                 if (repos[currentIndex] && repos[currentIndex].id === repo.id) {
                     const box = document.getElementById('readme-box'); if (box) box.innerHTML = readmeCache[repo.id];
                 }
-            } catch (e) { readmeCache[repo.id] = `<div class="p-10 border-4 border-dashed border-black text-center opacity-30 font-black text-xs">DOCS_NOT_FOUND</div>`; } 
+            } catch (e) { readmeCache[repo.id] = `<div class="p-10 border border-white/10 rounded-xl text-center text-white/30 text-xs mt-6">No README provided.</div>`; } 
             finally { fetchingIds.delete(repo.id); }
         }
 
-        // --- MODEL LOADING ---
-        document.getElementById('load-models-btn').onclick = async () => {
-            const key = document.getElementById('gemini-key-input').value.trim();
-            if (!key) return showToast("API KEY REQUIRED", "bg-red-600");
+        // --- Render UI ---
+        function renderCurrentCard(isUndo = false) {
+            const repo = repos[currentIndex]; if (!repo) return;
+            if (mode !== 'search') for(let i=1; i<=3; i++) if(repos[currentIndex+i]) fetchReadme(repos[currentIndex+i]);
             
-            const btn = document.getElementById('load-models-btn');
-            const originalText = btn.innerText;
-            btn.innerText = "...";
-            btn.disabled = true;
+            const safeLogin = repo.owner.login.replace(/'/g, "\\'");
+            const safeName = repo.name.replace(/'/g, "\\'");
+            
+            cardContainer.innerHTML = `
+                <div class="active-card absolute inset-0 glass-panel rounded-3xl flex flex-col overflow-hidden ${isUndo ? 'card-undo-anim' : ''}">
+                    
+                    <div class="p-5 border-b border-white/10 flex justify-between items-center shrink-0 bg-white/5">
+                        <div class="flex items-center gap-3 overflow-hidden">
+                            <img src="${repo.owner.avatar_url}" class="w-11 h-11 rounded-full border border-white/20 shadow-[0_4px_10px_rgba(0,0,0,0.5)]" draggable="false">
+                            <div class="overflow-hidden leading-tight">
+                                <p class="text-[10px] font-medium text-white/50 truncate">${repo.owner.login}</p>
+                                <h2 class="font-bold text-[17px] text-white truncate">${repo.name}</h2>
+                            </div>
+                        </div>
+                        <div class="bg-white/10 border border-white/10 px-3 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1.5 shrink-0 shadow-inner">
+                            <svg width="12" height="12" fill="currentColor" class="text-amber-400" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                            ${repo.stargazers_count > 999 ? (repo.stargazers_count/1000).toFixed(1)+'k' : repo.stargazers_count}
+                        </div>
+                    </div>
 
-            try {
-                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${key}`);
-                if (!res.ok) throw new Error("INVALID KEY");
-                const data = await res.json();
-                
-                modelSelect.innerHTML = '';
-                // Filter models supporting generation and matching "gemini"
-                const validModels = data.models.filter(m => m.supportedGenerationMethods.includes("generateContent") && m.name.includes("gemini"));
-                
-                validModels.forEach(m => {
-                    const modelId = m.name.replace('models/', '');
-                    const option = document.createElement('option');
-                    option.value = modelId;
-                    option.innerText = modelId;
-                    if (modelId === geminiModel) option.selected = true;
-                    modelSelect.appendChild(option);
-                });
-                
-                showToast("MODELS LOADED", "bg-[#00FF00] text-black");
-            } catch (e) {
-                showToast("API ERROR", "bg-red-600");
-            } finally {
-                btn.innerText = originalText;
-                btn.disabled = false;
-            }
-        };
+                    <div class="scrollable-content flex-1 overflow-y-auto overflow-x-hidden p-5 custom-scrollbar">
+                        <div class="p-4 glass rounded-2xl mb-6 shadow-sm">
+                            <p class="text-sm text-white/80 leading-relaxed">${repo.description || "No description provided."}</p>
+                        </div>
+                        
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            ${repo.language ? `<span class="bg-blue-500/20 text-blue-300 border border-blue-500/30 px-2.5 py-1 rounded-md text-[10px] font-semibold">${repo.language}</span>` : ''}
+                            <span class="bg-white/5 border border-white/10 px-2.5 py-1 rounded-md text-[10px] font-semibold text-white/60">Updated: ${new Date(repo.updated_at).toLocaleDateString()}</span>
+                        </div>
 
-        // --- TAGS MANAGEMENT ---
-        const renderTags = () => {
-            const list = document.getElementById('tags-list');
-            list.innerHTML = chaosTags.map(tag => `
-                <div class="inline-flex items-center bg-black text-[#00FF00] px-3 py-1 border-2 border-black text-[10px] font-bold uppercase gap-2">
-                    <span>${tag}</span>
-                    <button onclick="removeTag('${tag}')" class="hover:text-white">x</button>
+                        <div id="readme-box" class="markdown-body border-t border-white/10 pt-6">
+                            ${readmeCache[repo.id] || `<div class="py-12 flex flex-col items-center gap-3"><div class="w-6 h-6 rounded-full border-2 border-white/10 border-t-cyan-400 animate-spin"></div><span class="text-xs text-white/40 font-medium">Loading details...</span></div>`}
+                        </div>
+                    </div>
+
+                    <div class="p-4 border-t border-white/10 bg-black/20 backdrop-blur-md shrink-0 flex gap-3">
+                        <button onclick="openAnalyzer('${repo.id}')" class="flex-1 py-3.5 glass-btn rounded-xl text-white font-semibold text-xs flex items-center justify-center gap-2">
+                            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg> Chat AI
+                        </button>
+                        <a href="${repo.html_url}" target="_blank" class="flex-1 block text-center py-3.5 bg-white text-black rounded-xl font-bold text-xs hover:bg-white/90 transition-all flex items-center justify-center gap-2">
+                            Open Repo <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
+                        </a>
+                    </div>
                 </div>
-            `).join('');
-        };
+            `;
+            if (!readmeCache[repo.id]) fetchReadme(repo);
+            const fb = document.getElementById('feedback');
+            fb.className = "hidden absolute top-1/2 -translate-y-1/2 z-50 px-8 py-4 rounded-full font-bold text-2xl tracking-widest pointer-events-none transition-all duration-200";
+        }
 
-        window.removeTag = (tag) => {
-            chaosTags = chaosTags.filter(t => t !== tag);
-            renderTags();
-        };
-
-        document.getElementById('open-tags-btn').onclick = () => {
-            configModal.classList.add('hidden');
-            tagsModal.classList.remove('hidden');
-            renderTags();
-        };
-
-        document.getElementById('add-tag-btn').onclick = () => {
-            const val = document.getElementById('new-tag-input').value.trim().toLowerCase();
-            if (val && !chaosTags.includes(val)) {
-                chaosTags.push(val);
-                document.getElementById('new-tag-input').value = "";
-                renderTags();
-            }
-        };
-
-        document.getElementById('ai-tags-btn').onclick = async () => {
-            if (!geminiKey) { showToast("GEMINI_KEY_REQUIRED", "bg-red-600"); configModal.classList.remove('hidden'); tagsModal.classList.add('hidden'); return; }
-            const sourceRepos = ghToken ? remoteStars : localVault;
-            if (sourceRepos.length === 0) { showToast("NO_STARS_TO_ANALYZE", "bg-red-600"); return; }
-            
-            const btn = document.getElementById('ai-tags-btn');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = "ANALYZING_PATTERNS..."; btn.disabled = true;
-
-            try {
-                const samples = sourceRepos.slice(0, 30).map(r => `${r.name}: ${r.description || ''}`).join('\n');
-                const prompt = `Analyze these repositories starred by a developer:\n${samples}\nExtract 8 high-level technical topics or keywords (single words, lowercase) that represent their specific interests (e.g. "rust", "neovim", "devops"). Return ONLY a raw JSON array of strings. No markdown.`;
-                
-                // Using selected dynamic model
-                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${geminiModel}:generateContent?key=${geminiKey}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }) });
-                if (!res.ok) throw new Error("API_ERROR");
-                const data = await res.json();
-                const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-                const jsonStr = text.replace(/```json|```/g, '').trim();
-                const newTags = JSON.parse(jsonStr);
-                if (Array.isArray(newTags)) {
-                    let addedCount = 0;
-                    newTags.forEach(tag => { const t = tag.toLowerCase().trim(); if (t && !chaosTags.includes(t)) { chaosTags.push(t); addedCount++; } });
-                    renderTags(); showToast(`ADDED_${addedCount}_SMART_TAGS`, "bg-[#00FF00] text-black");
-                }
-            } catch (e) { console.error(e); showToast("ANALYSIS_FAILED", "bg-red-600"); } 
-            finally { btn.innerHTML = originalText; btn.disabled = false; }
-        };
-
-        document.getElementById('reset-tags').onclick = () => {
-            chaosTags = JSON.parse(JSON.stringify(defaultTags));
-            renderTags();
-        };
-
-        document.getElementById('close-tags').onclick = () => {
-            localStorage.setItem('gs_chaos_tags', JSON.stringify(chaosTags));
-            tagsModal.classList.add('hidden');
-            configModal.classList.remove('hidden');
-            showToast("TAGS_UPDATED", "bg-[#00FF00] text-black");
-        };
-
-        // --- ANALYZER / CHAT LOGIC ---
-        window.openAnalyzer = async (repoId) => {
-            const repo = (ghToken ? remoteStars : localVault).find(r => r.id == repoId) || repos[currentIndex];
-            if (!repo) return;
-            if (!geminiKey) { showToast("GEMINI_KEY_REQUIRED", "bg-red-600"); document.getElementById('btn-config').click(); return; }
-            viewAnalyzer.classList.remove('hidden');
-            document.getElementById('analyzer-title').innerText = `${repo.owner.login}/${repo.name}`;
-            document.getElementById('analyzer-chat').innerHTML = `<div class="p-4 border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)]"><p class="font-bold text-xs uppercase mb-2 text-[#00FF00] bg-black inline-block px-1">SYSTEM</p><p class="text-xs">Démarrage de l'analyseur pour ${repo.name}...</p><p class="text-[9px] text-gray-500 mt-1">Model: ${geminiModel}</p></div>`;
-            document.getElementById('analyzer-loading').classList.remove('hidden');
-            document.getElementById('analyzer-chat').classList.add('hidden');
-            chatHistory = []; currentRepoContext = "";
-            try {
-                document.getElementById('analyzer-status').innerText = "Fetching_Tree...";
-                const treeRes = await fetchGithub(`https://api.github.com/repos/${repo.owner.login}/${repo.name}/git/trees/${repo.default_branch || 'main'}?recursive=1`);
-                if(!treeRes.ok) throw new Error("REPO_ACCESS_DENIED");
-                const treeData = await treeRes.json();
-                const files = treeData.tree.filter(f => f.type === 'blob' && /\.(js|jsx|ts|tsx|py|html|css|json|md|c|cpp|go|rs|php|java|rb)$/.test(f.path) && !f.path.match(/node_modules|dist|\.git|lock|package-lock/)).slice(0, 150);
-                if(files.length === 0) throw new Error("NO_CODE_FOUND");
-                document.getElementById('analyzer-status').innerText = `Downloading_Blobs (${files.length})...`;
-                const progress = document.getElementById('analyzer-progress');
-                let downloadedContent = "";
-                for(let i=0; i<files.length; i+=5) {
-                    const batch = files.slice(i, i+5);
-                    const contents = await Promise.all(batch.map(f => fetch(f.url, ghToken ? {headers:{'Authorization':`token ${ghToken}`}} : {}).then(r=>r.json()).then(d => d.content ? `\n-- ${f.path} --\n${new TextDecoder().decode(Uint8Array.from(atob(d.content),c=>c.charCodeAt(0)))}` : "").catch(e=>"")));
-                    downloadedContent += contents.join("");
-                    progress.style.width = `${(i/files.length)*100}%`;
-                    document.getElementById('analyzer-details').innerText = `${i}/${files.length} segments loaded`;
-                }
-                currentRepoContext = downloadedContent;
-                document.getElementById('analyzer-loading').classList.add('hidden');
-                document.getElementById('analyzer-chat').classList.remove('hidden');
-                addChatMessage("AI", `Analyse terminée. J'ai indexé **${files.length} fichiers**. Posez votre question.`);
-            } catch (e) {
-                document.getElementById('analyzer-loading').classList.add('hidden');
-                document.getElementById('analyzer-chat').classList.remove('hidden');
-                addChatMessage("AI", `Erreur Critique: ${e.message}. Impossible d'analyser ce dépôt.`);
-            }
-        };
-        window.closeAnalyzer = () => { viewAnalyzer.classList.add('hidden'); };
-        window.sendMessage = async () => {
-            const input = document.getElementById('chat-input');
-            const q = input.value.trim();
-            if (!q || !geminiKey) return;
-            input.value = ""; document.getElementById('btn-send').disabled = true; document.getElementById('btn-send').innerText = "...";
-            addChatMessage("User", q);
-            const context = `Tu es un expert en code. Analyse ce code source:\n${currentRepoContext.slice(0, 30000)}...\n(Tronqué si trop long)\n\nHistorique:\n${chatHistory.slice(-4).map(x=>x.role+': '+x.text).join('\n')}\nUtilisateur: ${q}\nRéponds de manière concise, technique, et formatée en Markdown.`;
-            try {
-                // Using dynamic model here
-                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${geminiModel}:generateContent?key=${geminiKey}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts: [{ text: context }] }] }) });
-                if (!res.ok) throw new Error((await res.json()).error?.message || "API Error");
-                const data = await res.json();
-                const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "No response";
-                addChatMessage("AI", reply);
-            } catch (e) { addChatMessage("AI", `Erreur API Gemini: ${e.message}`); } 
-            finally { document.getElementById('btn-send').disabled = false; document.getElementById('btn-send').innerText = "SEND"; }
-        };
-
-        function addChatMessage(role, text) {
-            const div = document.createElement('div');
-            div.className = `p-4 mb-4 rounded-none max-w-[85%] ${role === 'User' ? 'msg-user' : 'msg-ai'} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.5)]`;
-            let contentHtml = role === 'AI' ? marked.parse(text) : text;
-            div.innerHTML = `<div class="font-black text-[10px] uppercase mb-1 opacity-50">${role === 'User' ? 'YOU' : 'GEMINI_CORE'}</div><div class="markdown-body text-xs">${contentHtml}</div>`;
-            const container = document.getElementById('analyzer-chat'); container.appendChild(div); container.scrollTop = container.scrollHeight;
-            if(role === 'AI') div.querySelectorAll('pre code').forEach(hljs.highlightElement);
-            chatHistory.push({role, text});
+        function renderVaultList(list) {
+            vaultTitle.innerText = ghToken ? "Stars" : "Vault";
+            if (list.length === 0) { vaultList.innerHTML = `<div class="p-12 glass rounded-2xl text-center text-white/30 text-sm font-medium">Your vault is empty.</div>`; return; }
+            vaultList.innerHTML = list.map(f => {
+                const safeLogin = f.owner.login.replace(/'/g, "\\'");
+                const safeName = f.name.replace(/'/g, "\\'");
+                return `
+                <div onclick="openAnalyzer('${f.id}')" class="cursor-pointer glass p-4 rounded-2xl flex items-center gap-4 hover:bg-white/10 transition-all group">
+                    <img src="${f.owner.avatar_url}" class="w-12 h-12 rounded-full border border-white/20 shrink-0 shadow-md">
+                    <div class="flex-1 overflow-hidden">
+                        <h4 class="font-semibold text-sm text-white truncate group-hover:text-cyan-400 transition-colors">${f.name}</h4>
+                        <div class="flex gap-3 mt-1 items-center">
+                            <p class="text-[10px] text-white/50 flex items-center gap-1"><svg width="10" height="10" fill="currentColor" class="text-amber-400" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg> ${f.stargazers_count > 999 ? (f.stargazers_count/1000).toFixed(1)+'k' : f.stargazers_count}</p>
+                            ${f.language ? `<p class="text-[10px] text-white/50">${f.language}</p>` : ''}
+                        </div>
+                    </div>
+                    <div class="flex gap-2 shrink-0 opacity-80 group-hover:opacity-100 transition-opacity">
+                        <a href="${f.html_url}" target="_blank" onclick="event.stopPropagation()" class="p-2.5 bg-white/10 hover:bg-white/20 rounded-xl text-white transition-all"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg></a>
+                        <button onclick="event.stopPropagation(); unstar('${safeLogin}', '${safeName}', ${f.id})" class="p-2.5 bg-rose-500/20 hover:bg-rose-500/40 text-rose-300 rounded-xl transition-all"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6"/></svg></button>
+                    </div>
+                </div>
+            `}).join('');
         }
 
         // --- Swipe Logic ---
@@ -588,8 +594,7 @@
             if (!isDragging) return;
             currentX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX; 
             currentY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
-            const dx = currentX - startX;
-            const dy = currentY - startY;
+            const dx = currentX - startX, dy = currentY - startY;
             if (!swipeIntent) {
                 if (Math.abs(dx) > 15) swipeIntent = 'horizontal';
                 else if (Math.abs(dy) > 15) swipeIntent = 'vertical';
@@ -598,30 +603,27 @@
                 if (e.cancelable) e.preventDefault(); 
                 const card = document.querySelector('.active-card'); 
                 if (card) { 
-                    card.style.transform = `translate(${dx}px, ${dy * 0.05}px) rotate(${dx / 20}deg)`; 
+                    card.style.transform = `translate(${dx}px, ${dy * 0.05}px) rotate(${dx / 25}deg)`; 
                     updateFeedback(dx); 
                 } 
             }
         };
 
         const handleEnd = () => { 
-            if (!isDragging) return; 
-            isDragging = false; 
+            if (!isDragging) return; isDragging = false; 
             if (swipeIntent === 'horizontal') { 
                 const dx = currentX - startX; 
-                if (dx > 100) completeSwipe('right'); 
-                else if (dx < -100) completeSwipe('left'); 
+                if (dx > 90) completeSwipe('right'); 
+                else if (dx < -90) completeSwipe('left'); 
                 else resetCard(); 
-            } else {
-                resetCard();
-            }
+            } else { resetCard(); }
             swipeIntent = null;
         };
 
         const resetCard = () => { 
             const card = document.querySelector('.active-card'); 
             if (card) { 
-                card.style.transition = "transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)"; 
+                card.style.transition = "transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)"; 
                 card.style.transform = `translate(0,0) rotate(0)`; 
                 document.getElementById('feedback').classList.add('hidden'); 
             } 
@@ -631,95 +633,37 @@
             const fb = document.getElementById('feedback'); 
             if (Math.abs(dx) < 40) { fb.classList.add('hidden'); return; } 
             fb.classList.remove('hidden'); 
-            fb.innerText = dx > 0 ? "STAR" : "SKIP"; 
-            fb.className = `absolute top-1/2 -translate-y-1/2 z-50 px-10 py-5 border-4 border-black font-black text-4xl uppercase shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] pointer-events-none ${dx > 0 ? 'right-4 bg-[#00FF00] text-black rotate-3' : 'left-4 bg-black text-white -rotate-3'}`; 
+            fb.innerText = dx > 0 ? "SAVE" : "SKIP"; 
+            fb.className = `absolute top-1/2 -translate-y-1/2 z-50 px-8 py-3 rounded-full font-bold text-xl tracking-widest pointer-events-none transition-all duration-200 glass border ${dx > 0 ? 'right-4 text-emerald-400 border-emerald-500/30 bg-emerald-500/10 rotate-6' : 'left-4 text-rose-400 border-rose-500/30 bg-rose-500/10 -rotate-6'}`; 
         };
 
         window.completeSwipe = async (dir) => {
             const card = document.querySelector('.active-card'); if (!card) return;
             swipeHistory.push({ index: currentIndex, direction: dir, repo: repos[currentIndex] }); updateUndoButton();
-            card.style.transition = "transform 0.2s ease-in"; card.style.transform = `translate(${dir === 'right' ? 800 : -800}px, 0) rotate(${dir === 'right' ? 30 : -30}deg)`;
+            card.style.transition = "transform 0.3s ease-in"; card.style.transform = `translate(${dir === 'right' ? 800 : -800}px, 0) rotate(${dir === 'right' ? 20 : -20}deg)`;
             if (dir === 'right') await toggleStar(repos[currentIndex], 'star');
-            setTimeout(() => { currentIndex++; if (currentIndex >= repos.length - 8 && mode !== 'search') { page++; fetchTrendingRepos(); } renderCurrentCard(); }, 120);
+            setTimeout(() => { currentIndex++; if (currentIndex >= repos.length - 8 && mode !== 'search') { page++; fetchTrendingRepos(); } renderCurrentCard(); }, 150);
         };
 
         window.undoLastSwipe = async () => {
             if (swipeHistory.length === 0) return;
             const lastAction = swipeHistory.pop(); updateUndoButton();
             if (lastAction.direction === 'right') await toggleStar(lastAction.repo, 'unstar');
-            currentIndex = lastAction.index; renderCurrentCard(true); showToast("UNDO", "bg-black text-white");
+            currentIndex = lastAction.index; renderCurrentCard(true);
         };
 
-        const updateUndoButton = () => { if (swipeHistory.length > 0) { btnUndo.classList.replace('opacity-30', 'opacity-100'); btnUndo.classList.replace('cursor-not-allowed', 'cursor-pointer'); } else { btnUndo.classList.replace('opacity-100', 'opacity-30'); btnUndo.classList.replace('cursor-pointer', 'cursor-not-allowed'); } };
+        const updateUndoButton = () => { 
+            if (swipeHistory.length > 0) { btnUndo.classList.replace('opacity-30', 'opacity-100'); btnUndo.classList.replace('cursor-not-allowed', 'cursor-pointer'); } 
+            else { btnUndo.classList.replace('opacity-100', 'opacity-30'); btnUndo.classList.replace('cursor-pointer', 'cursor-not-allowed'); } 
+        };
 
-        // --- Render UI ---
-        function renderCurrentCard(isUndo = false) {
-            const repo = repos[currentIndex]; if (!repo) return;
-            if (mode !== 'search') for(let i=1; i<=3; i++) if(repos[currentIndex+i]) fetchReadme(repos[currentIndex+i]);
-            
-            const safeLogin = repo.owner.login.replace(/'/g, "\\'");
-            const safeName = repo.name.replace(/'/g, "\\'");
-            
-            cardContainer.innerHTML = `
-                <div class="active-card absolute inset-0 bg-white border-4 border-black shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] flex flex-col overflow-hidden ${isUndo ? 'card-undo-anim' : ''}">
-                    <div class="p-4 border-b-4 border-black bg-white flex justify-between items-center shrink-0">
-                        <div class="flex items-center gap-3 overflow-hidden">
-                            <img src="${repo.owner.avatar_url}" class="w-10 h-10 border-2 border-black" draggable="false">
-                            <div class="overflow-hidden leading-none">
-                                <p class="text-[9px] font-black uppercase text-black/40 mb-1">${repo.owner.login}</p>
-                                <h2 class="font-black text-base uppercase truncate leading-none">${repo.name}</h2>
-                            </div>
-                        </div>
-                        <div class="bg-[#00FF00] border-2 border-black px-2 py-1 text-[10px] font-black shrink-0">★ ${repo.stargazers_count}</div>
-                    </div>
-                    <div class="scrollable-content flex-1 overflow-y-auto overflow-x-hidden p-5 custom-scrollbar bg-white">
-                        <div class="p-4 border-2 border-black bg-[#f0f0f0] mb-5 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-                            <p class="text-xs font-black uppercase italic leading-tight">"${repo.description || "NO_SUMMARY_FOUND"}"</p>
-                        </div>
-                        <div id="readme-box" class="markdown-body border-t-4 border-black pt-6">
-                            ${readmeCache[repo.id] || `<div class="py-20 flex flex-col items-center gap-2 opacity-20"><div class="w-6 h-6 border-4 border-black border-t-[#00FF00] animate-spin"></div><span class="text-[9px] font-black uppercase italic">Decrypting_Data...</span></div>`}
-                        </div>
-                    </div>
-                    <div class="p-3 border-t-4 border-black bg-white shrink-0 flex gap-2">
-                        <button onclick="openAnalyzer('${repo.id}')" class="flex-1 py-3 bg-white text-black border-2 border-black font-black uppercase text-[10px] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:shadow-none transition-all hover:bg-[#00FF00]">
-                            Chat_AI
-                        </button>
-                        <a href="${repo.html_url}" target="_blank" class="flex-1 block text-center py-3 bg-black text-[#00FF00] border-2 border-black font-black uppercase text-[10px] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:shadow-none transition-all hover:translate-x-[1px] hover:translate-y-[1px]">
-                            Open_Repo
-                        </a>
-                    </div>
-                </div>
-            `;
-            if (!readmeCache[repo.id]) fetchReadme(repo);
-            document.getElementById('feedback').classList.add('hidden');
-        }
-
-        function renderVaultList(list) {
-            vaultTitle.innerText = ghToken ? "Stars" : "Vault";
-            if (list.length === 0) { vaultList.innerHTML = `<div class="p-20 border-4 border-dashed border-black text-center opacity-20 font-black uppercase text-xs italic">Sector_Empty</div>`; return; }
-            vaultList.innerHTML = list.map(f => {
-                const safeLogin = f.owner.login.replace(/'/g, "\\'");
-                const safeName = f.name.replace(/'/g, "\\'");
-                return `
-                <div onclick="openAnalyzer('${f.id}')" class="cursor-pointer bg-white p-4 border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] flex items-center gap-4 hover:translate-x-1 transition-transform group">
-                    <img src="${f.owner.avatar_url}" class="w-10 h-10 border-2 border-black shrink-0">
-                    <div class="flex-1 overflow-hidden">
-                        <h4 class="font-black uppercase truncate text-xs group-hover:text-[#00aa00] transition-colors">${f.name}</h4>
-                        <p class="text-[9px] font-black uppercase opacity-40">★ ${f.stargazers_count}</p>
-                    </div>
-                    <div class="flex gap-2 shrink-0">
-                        <a href="${f.html_url}" target="_blank" onclick="event.stopPropagation()" class="p-2 border-2 border-black bg-black text-[#00FF00] hover:bg-[#00FF00] hover:text-black transition-colors"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg></a>
-                        <button onclick="event.stopPropagation(); unstar('${safeLogin}', '${safeName}', ${f.id})" class="p-2 border-2 border-black hover:bg-red-600 hover:text-white transition-colors"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6"/></svg></button>
-                    </div>
-                </div>
-            `}).join('');
-        }
-
-        // --- Initialisation & Events ---
+        // --- Other System Bindings ---
+        window.unstar = async (owner, repoName, id) => { if (await toggleStar({ owner: { login: owner }, name: repoName, id }, 'unstar')) showToast("Star removed."); };
+        
         const updateNavStyles = (activeBtn) => { 
             [btnTrending, btnRandom, btnVault, btnSearch].forEach(b => { 
-                if (b === activeBtn) { b.classList.add('bg-[#00FF00]', 'text-black', 'shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]', 'translate-x-[-1px]', 'translate-y-[-1px]'); } 
-                else { b.classList.remove('bg-[#00FF00]', 'text-black', 'shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]', 'translate-x-[-1px]', 'translate-y-[-1px]'); b.classList.add('hover:bg-white', 'hover:text-black'); } 
+                if (b === activeBtn) { b.classList.add('bg-white/20', 'border-white/30', 'shadow-[inset_0_0_10px_rgba(255,255,255,0.1)]'); b.classList.remove('text-white/70'); } 
+                else { b.classList.remove('bg-white/20', 'border-white/30', 'shadow-[inset_0_0_10px_rgba(255,255,255,0.1)]'); b.classList.add('text-white/70'); } 
             }); 
         };
 
@@ -735,42 +679,147 @@
         document.getElementById('btn-config').onclick = () => {
             document.getElementById('gh-token-input').value = ghToken;
             document.getElementById('gemini-key-input').value = geminiKey;
-            
-            // S'assurer que le select affiche au moins le modèle sauvegardé
             if(modelSelect.options.length === 1 && modelSelect.options[0].value === "gemini-1.5-flash" && geminiModel !== "gemini-1.5-flash") {
-                const opt = document.createElement('option');
-                opt.value = geminiModel; opt.innerText = geminiModel;
-                modelSelect.appendChild(opt); modelSelect.value = geminiModel;
-            } else if (Array.from(modelSelect.options).some(o => o.value === geminiModel)) {
-                modelSelect.value = geminiModel;
-            }
-
+                const opt = document.createElement('option'); opt.value = geminiModel; opt.innerText = geminiModel; modelSelect.appendChild(opt); modelSelect.value = geminiModel;
+            } else if (Array.from(modelSelect.options).some(o => o.value === geminiModel)) { modelSelect.value = geminiModel; }
             configModal.classList.remove('hidden');
         };
         
         document.getElementById('close-modal').onclick = () => configModal.classList.add('hidden');
-        
         document.getElementById('save-config').onclick = () => {
             ghToken = document.getElementById('gh-token-input').value.trim();
             geminiKey = document.getElementById('gemini-key-input').value.trim();
             geminiModel = modelSelect.value || "gemini-1.5-flash";
-            
-            localStorage.setItem('gs_gh_token', ghToken);
-            localStorage.setItem('gs_gemini_key', geminiKey);
-            localStorage.setItem('gs_gemini_model', geminiModel);
-            
-            showToast("CONFIG_SAVED", "bg-[#00FF00] text-black");
-            configModal.classList.add('hidden');
-            fetchTrendingRepos(true);
+            localStorage.setItem('gs_gh_token', ghToken); localStorage.setItem('gs_gemini_key', geminiKey); localStorage.setItem('gs_gemini_model', geminiModel);
+            showToast("Settings saved."); configModal.classList.add('hidden'); fetchTrendingRepos(true);
         };
-        
-        document.getElementById('clear-config').onclick = () => {
-            localStorage.removeItem('gs_gh_token'); 
-            localStorage.removeItem('gs_gemini_key');
-            localStorage.removeItem('gs_gemini_model');
-            window.location.reload();
+        document.getElementById('clear-config').onclick = () => { localStorage.removeItem('gs_gh_token'); localStorage.removeItem('gs_gemini_key'); localStorage.removeItem('gs_gemini_model'); window.location.reload(); };
+
+        document.getElementById('load-models-btn').onclick = async () => {
+            const key = document.getElementById('gemini-key-input').value.trim();
+            if (!key) return showToast("API Key required.", true);
+            const btn = document.getElementById('load-models-btn');
+            const originalText = btn.innerText; btn.innerText = "..."; btn.disabled = true;
+            try {
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${key}`);
+                if (!res.ok) throw new Error("INVALID KEY");
+                const data = await res.json();
+                modelSelect.innerHTML = '';
+                const validModels = data.models.filter(m => m.supportedGenerationMethods.includes("generateContent") && m.name.includes("gemini"));
+                validModels.forEach(m => {
+                    const modelId = m.name.replace('models/', '');
+                    const option = document.createElement('option'); option.value = modelId; option.innerText = modelId; option.className = "bg-gray-900 text-white";
+                    if (modelId === geminiModel) option.selected = true;
+                    modelSelect.appendChild(option);
+                });
+                showToast("Models loaded.");
+            } catch (e) { showToast("Failed to fetch models.", true); } finally { btn.innerText = originalText; btn.disabled = false; }
         };
 
+        // --- TAGS MANAGEMENT (Chaos Matrix) ---
+        const renderTags = () => {
+            const list = document.getElementById('tags-list');
+            list.innerHTML = chaosTags.map(tag => `
+                <div class="inline-flex items-center glass px-3 py-1.5 rounded-full text-[10px] font-medium text-white gap-2 border border-white/10">
+                    <span>${tag}</span><button onclick="removeTag('${tag}')" class="text-white/40 hover:text-rose-400 transition-colors">✕</button>
+                </div>
+            `).join('');
+        };
+        window.removeTag = (tag) => { chaosTags = chaosTags.filter(t => t !== tag); renderTags(); };
+        document.getElementById('open-tags-btn').onclick = () => { configModal.classList.add('hidden'); tagsModal.classList.remove('hidden'); renderTags(); };
+        document.getElementById('add-tag-btn').onclick = () => { const val = document.getElementById('new-tag-input').value.trim().toLowerCase(); if (val && !chaosTags.includes(val)) { chaosTags.push(val); document.getElementById('new-tag-input').value = ""; renderTags(); } };
+        document.getElementById('reset-tags').onclick = () => { chaosTags = JSON.parse(JSON.stringify(defaultTags)); renderTags(); };
+        document.getElementById('close-tags').onclick = () => { localStorage.setItem('gs_chaos_tags', JSON.stringify(chaosTags)); tagsModal.classList.add('hidden'); configModal.classList.remove('hidden'); showToast("Matrix updated."); };
+
+        document.getElementById('ai-tags-btn').onclick = async () => {
+            if (!geminiKey) { showToast("API Key missing.", true); configModal.classList.remove('hidden'); tagsModal.classList.add('hidden'); return; }
+            const sourceRepos = ghToken ? remoteStars : localVault;
+            if (sourceRepos.length === 0) { showToast("Vault empty. No data to scan.", true); return; }
+            const btn = document.getElementById('ai-tags-btn'); const originalText = btn.innerHTML; btn.innerHTML = "Scanning Nodes..."; btn.disabled = true;
+            try {
+                const samples = sourceRepos.slice(0, 30).map(r => `${r.name}: ${r.description || ''}`).join('\n');
+                const prompt = `Analyze these repositories starred by a developer:\n${samples}\nExtract 8 high-level technical topics or keywords (single words, lowercase) that represent their specific interests (e.g. "rust", "neovim", "devops"). Return ONLY a raw JSON array of strings. No markdown.`;
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }) });
+                if (!res.ok) throw new Error("API_ERROR");
+                const data = await res.json();
+                const jsonStr = data.candidates?.[0]?.content?.parts?.[0]?.text.replace(/```json|```/g, '').trim();
+                const newTags = JSON.parse(jsonStr);
+                if (Array.isArray(newTags)) {
+                    let addedCount = 0; newTags.forEach(tag => { const t = tag.toLowerCase().trim(); if (t && !chaosTags.includes(t)) { chaosTags.push(t); addedCount++; } });
+                    renderTags(); showToast(`Extracted ${addedCount} new signals.`);
+                }
+            } catch (e) { showToast("Analysis failed.", true); } finally { btn.innerHTML = originalText; btn.disabled = false; }
+        };
+
+        // --- Analyzer ---
+        window.openAnalyzer = async (repoId) => {
+            const repo = (ghToken ? remoteStars : localVault).find(r => r.id == repoId) || repos[currentIndex];
+            if (!repo) return;
+            if (!geminiKey) { showToast("API Key required for Analyzer.", true); document.getElementById('btn-config').click(); return; }
+            
+            viewAnalyzer.classList.remove('hidden');
+            document.getElementById('analyzer-title').innerText = `${repo.owner.login}/${repo.name}`;
+            document.getElementById('analyzer-chat').innerHTML = `<div class="p-4 glass rounded-2xl max-w-[85%]"><div class="flex items-center gap-2 mb-2"><div class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></div><p class="font-semibold text-[10px] uppercase text-cyan-400 tracking-wider">System</p></div><p class="text-sm text-white/80">Initializing neural link with ${repo.name}...</p></div>`;
+            document.getElementById('analyzer-loading').classList.remove('hidden');
+            document.getElementById('analyzer-chat').classList.add('hidden');
+            chatHistory = []; currentRepoContext = "";
+
+            try {
+                document.getElementById('analyzer-status').innerText = "Fetching File Tree...";
+                const treeRes = await fetchGithub(`https://api.github.com/repos/${repo.owner.login}/${repo.name}/git/trees/${repo.default_branch || 'main'}?recursive=1`);
+                if(!treeRes.ok) throw new Error("REPO_ACCESS_DENIED");
+                const treeData = await treeRes.json();
+                const files = treeData.tree.filter(f => f.type === 'blob' && /\.(js|jsx|ts|tsx|py|html|css|json|md|c|cpp|go|rs|php|java|rb)$/.test(f.path) && !f.path.match(/node_modules|dist|\.git|lock|package-lock/)).slice(0, 150);
+                if(files.length === 0) throw new Error("No readable code found.");
+                
+                document.getElementById('analyzer-status').innerText = `Downloading Blobs (${files.length})...`;
+                const progress = document.getElementById('analyzer-progress');
+                let downloadedContent = "";
+                for(let i=0; i<files.length; i+=5) {
+                    const batch = files.slice(i, i+5);
+                    const contents = await Promise.all(batch.map(f => fetch(f.url, ghToken ? {headers:{'Authorization':`token ${ghToken}`}} : {}).then(r=>r.json()).then(d => d.content ? `\n-- ${f.path} --\n${new TextDecoder().decode(Uint8Array.from(atob(d.content),c=>c.charCodeAt(0)))}` : "").catch(e=>"")));
+                    downloadedContent += contents.join("");
+                    progress.style.width = `${(i/files.length)*100}%`;
+                    document.getElementById('analyzer-details').innerText = `${i}/${files.length} streams merged`;
+                }
+                currentRepoContext = downloadedContent;
+                document.getElementById('analyzer-loading').classList.add('hidden');
+                document.getElementById('analyzer-chat').classList.remove('hidden');
+                addChatMessage("AI", `Architecture mapped. **${files.length} files** ingested. Awaiting instructions.`);
+            } catch (e) {
+                document.getElementById('analyzer-loading').classList.add('hidden');
+                document.getElementById('analyzer-chat').classList.remove('hidden');
+                addChatMessage("AI", `Critical Error: ${e.message}`);
+            }
+        };
+        window.closeAnalyzer = () => { viewAnalyzer.classList.add('hidden'); };
+        window.sendMessage = async () => {
+            const input = document.getElementById('chat-input');
+            const q = input.value.trim();
+            if (!q || !geminiKey) return;
+            input.value = ""; document.getElementById('btn-send').disabled = true; document.getElementById('btn-send').innerText = "...";
+            addChatMessage("User", q);
+            const context = `Tu es un expert en code. Analyse ce code source:\n${currentRepoContext.slice(0, 30000)}...\n(Tronqué si trop long)\n\nHistorique:\n${chatHistory.slice(-4).map(x=>x.role+': '+x.text).join('\n')}\nUtilisateur: ${q}\nRéponds de manière concise, technique, et formatée en Markdown.`;
+            try {
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${geminiModel}:generateContent?key=${geminiKey}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts: [{ text: context }] }] }) });
+                if (!res.ok) throw new Error((await res.json()).error?.message || "API Error");
+                const data = await res.json();
+                const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "No response";
+                addChatMessage("AI", reply);
+            } catch (e) { addChatMessage("AI", `Link severed: ${e.message}`); } 
+            finally { document.getElementById('btn-send').disabled = false; document.getElementById('btn-send').innerText = "Send"; }
+        };
+        const addChatMessage = (role, text) => {
+            const div = document.createElement('div');
+            div.className = `p-4 mb-4 max-w-[85%] ${role === 'User' ? 'msg-user' : 'msg-ai'}`;
+            let contentHtml = role === 'AI' ? marked.parse(text) : text;
+            div.innerHTML = `<div class="font-semibold text-[10px] uppercase mb-1 opacity-70 flex items-center gap-1">${role === 'User' ? '<svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> YOU' : '<div class="w-1.5 h-1.5 rounded-full bg-cyan-400"></div> CORE'}</div><div class="markdown-body">${contentHtml}</div>`;
+            const container = document.getElementById('analyzer-chat'); container.appendChild(div); container.scrollTop = container.scrollHeight;
+            if(role === 'AI') div.querySelectorAll('pre code').forEach(hljs.highlightElement);
+            chatHistory.push({role, text});
+        };
+
+        // --- Boot ---
         cardContainer.addEventListener('mousedown', handleStart);
         cardContainer.addEventListener('touchstart', handleStart, { passive: false });
         window.addEventListener('mousemove', handleMove);
@@ -778,6 +827,7 @@
         window.addEventListener('touchmove', handleMove, { passive: false }); 
         window.addEventListener('touchend', handleEnd);
 
+        updateNavStyles(btnTrending);
         fetchUserStars(true).then(() => fetchTrendingRepos());
     </script>
 </body>
