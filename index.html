@@ -96,11 +96,29 @@
         }
         .glass-btn:active { transform: translateY(1px); }
 
-        /* --- SCROLLBAR --- */
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 10px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.4); }
+        /* --- SCROLLBAR ULTRA-DISCRÈTE (FIREFOX & WEBKIT) --- */
+        .custom-scrollbar {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+            overscroll-behavior-y: contain;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 9999px;
+            transition: background 0.2s ease;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.35);
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
         /* --- MARKDOWN STYLES FOR DARK GLASS --- */
         .markdown-body { font-size: 14px; line-height: 1.6; color: rgba(255,255,255,0.85); overflow-x: hidden !important; width: 100% !important; }
@@ -183,6 +201,10 @@
             <button id="btn-random" title="Discover Chaos" class="glass-btn p-2.5 rounded-xl text-white/70">
                 <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><circle cx="15.5" cy="8.5" r="1.5"/><circle cx="8.5" cy="15.5" r="1.5"/><circle cx="15.5" cy="15.5" r="1.5"/><circle cx="12" cy="12" r="1.5"/></svg>
             </button>
+            <button id="btn-interests" title="Centres d'intérêt" class="glass-btn p-2.5 rounded-xl text-purple-300 hover:text-purple-200 hover:border-purple-500/50 relative">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+                <span id="interests-badge" class="absolute -top-1 -right-1 bg-purple-500 text-white text-[9px] font-bold px-1.5 py-0.2 rounded-full min-w-[16px] text-center shadow-sm">0</span>
+            </button>
             <button id="btn-search" title="Search" class="glass-btn p-2.5 rounded-xl text-white/70">
                 <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
             </button>
@@ -201,7 +223,10 @@
         
         <!-- View: Discover (Cards) -->
         <div id="view-discover" class="w-full h-full flex flex-col items-center">
-            <div id="card-container" class="relative w-full max-w-[420px] h-[75vh] mt-2 perspective-1000">
+            <!-- Dynamic Interests Pill Row (visible in Discover mode) -->
+            <div id="interests-pill-row" class="hidden w-full max-w-[420px] mb-1 px-1 flex items-center gap-2 overflow-x-auto no-scrollbar py-1 shrink-0"></div>
+
+            <div id="card-container" class="relative w-full max-w-[420px] h-[75vh] mt-1 perspective-1000">
                  <!-- Empty State Loading -->
                  <div class="flex flex-col items-center justify-center h-full gap-4 glass rounded-3xl w-full">
                     <div class="w-12 h-12 rounded-full border-2 border-white/20 border-t-cyan-400 animate-spin"></div>
@@ -213,16 +238,24 @@
             <div id="feedback" class="hidden absolute top-1/2 -translate-y-1/2 z-50 px-10 py-4 rounded-full font-bold text-2xl tracking-widest pointer-events-none transition-all duration-200"></div>
 
             <!-- Swipe Buttons -->
-            <div class="absolute bottom-6 flex items-center gap-8 z-[40]">
-                <button onclick="completeSwipe('left')" class="w-16 h-16 rounded-full glass flex items-center justify-center text-rose-400 hover:bg-rose-500/20 hover:border-rose-500/50 hover:shadow-[0_0_20px_rgba(244,63,94,0.3)] transition-all transform hover:scale-105 active:scale-95">
-                    <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
-                </button>
-                <button id="btn-undo" onclick="undoLastSwipe()" class="w-12 h-12 rounded-full glass flex items-center justify-center text-amber-400 hover:bg-amber-500/20 hover:border-amber-500/50 transition-all transform hover:scale-105 active:scale-95 opacity-30 cursor-not-allowed">
-                    <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M3 10h10a8 8 0 0 1 8 8v2M3 10l6 6m-6-6l6-6"/></svg>
-                </button>
-                <button onclick="completeSwipe('right')" class="w-16 h-16 rounded-full glass flex items-center justify-center text-emerald-400 hover:bg-emerald-500/20 hover:border-emerald-500/50 hover:shadow-[0_0_20px_rgba(16,185,129,0.3)] transition-all transform hover:scale-105 active:scale-95">
-                    <svg width="28" height="28" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                </button>
+            <div class="absolute bottom-5 flex flex-col items-center gap-2 z-[40]">
+                <div class="flex items-center gap-8">
+                    <button onclick="completeSwipe('left')" title="Skip (Flèche Gauche)" class="w-16 h-16 rounded-full glass flex items-center justify-center text-rose-400 hover:bg-rose-500/20 hover:border-rose-500/50 hover:shadow-[0_0_20px_rgba(244,63,94,0.3)] transition-all transform hover:scale-105 active:scale-95">
+                        <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                    </button>
+                    <button id="btn-undo" onclick="undoLastSwipe()" title="Undo (Flèche Haut)" class="w-12 h-12 rounded-full glass flex items-center justify-center text-amber-400 hover:bg-amber-500/20 hover:border-amber-500/50 transition-all transform hover:scale-105 active:scale-95 opacity-30 cursor-not-allowed">
+                        <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M3 10h10a8 8 0 0 1 8 8v2M3 10l6 6m-6-6l6-6"/></svg>
+                    </button>
+                    <button onclick="completeSwipe('right')" title="Save (Flèche Droite)" class="w-16 h-16 rounded-full glass flex items-center justify-center text-emerald-400 hover:bg-emerald-500/20 hover:border-emerald-500/50 hover:shadow-[0_0_20px_rgba(16,185,129,0.3)] transition-all transform hover:scale-105 active:scale-95">
+                        <svg width="28" height="28" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                    </button>
+                </div>
+                <!-- Keyboard hints for desktop -->
+                <div class="hidden sm:flex items-center gap-6 text-[10px] text-white/40 font-mono tracking-wider">
+                    <span class="flex items-center gap-1"><kbd class="px-1.5 py-0.5 rounded bg-white/10 text-white/70">←</kbd> Passer</span>
+                    <span class="flex items-center gap-1"><kbd class="px-1.5 py-0.5 rounded bg-white/10 text-white/70">↑</kbd> Annuler</span>
+                    <span class="flex items-center gap-1"><kbd class="px-1.5 py-0.5 rounded bg-white/10 text-white/70">→</kbd> Sauvegarder</span>
+                </div>
             </div>
         </div>
 
@@ -390,6 +423,9 @@
         const vaultTitle = document.getElementById('vault-title');
         const btnTrending = document.getElementById('btn-trending');
         const btnRandom = document.getElementById('btn-random');
+        const btnInterests = document.getElementById('btn-interests');
+        const interestsBadge = document.getElementById('interests-badge');
+        const interestsPillRow = document.getElementById('interests-pill-row');
         const btnVault = document.getElementById('btn-vault');
         const btnSearch = document.getElementById('btn-search');
         const configModal = document.getElementById('config-modal');
@@ -398,6 +434,7 @@
         const btnUndo = document.getElementById('btn-undo');
         const vaultRefreshIndicator = document.getElementById('vault-loading-indicator');
         const modelSelect = document.getElementById('gemini-model-select');
+        let openedFromConfigModal = false;
 
         // --- Core Helpers ---
         const getChaosParams = () => {
@@ -520,6 +557,7 @@
 
         const showToast = (msg, isError = false) => { 
             const toast = document.createElement('div'); 
+            toast.id = 'toast';
             toast.className = `fixed bottom-24 left-1/2 -translate-x-1/2 px-6 py-3 rounded-full font-medium text-xs z-[200] backdrop-blur-xl border transition-all ${isError ? 'bg-rose-500/20 border-rose-500/50 text-rose-100 shadow-[0_0_15px_rgba(244,63,94,0.3)]' : 'bg-white/10 border-white/20 text-white shadow-[0_8px_32px_rgba(0,0,0,0.3)]'}`; 
             toast.innerText = msg; 
             document.body.appendChild(toast); 
@@ -899,14 +937,50 @@
         window.unstar = async (owner, repoName, id) => { if (await toggleStar({ owner: { login: owner }, name: repoName, id }, 'unstar')) showToast("Star removed."); };
         
         const updateNavStyles = (activeBtn) => { 
-            [btnTrending, btnRandom, btnVault, btnSearch].forEach(b => { 
+            [btnTrending, btnRandom, btnVault, btnSearch, btnInterests].forEach(b => { 
+                if (!b) return;
                 if (b === activeBtn) { b.classList.add('bg-white/20', 'border-white/30', 'shadow-[inset_0_0_10px_rgba(255,255,255,0.1)]'); b.classList.remove('text-white/70'); } 
                 else { b.classList.remove('bg-white/20', 'border-white/30', 'shadow-[inset_0_0_10px_rgba(255,255,255,0.1)]'); b.classList.add('text-white/70'); } 
             }); 
+            if (interestsPillRow) {
+                if (activeBtn === btnRandom) {
+                    interestsPillRow.classList.remove('hidden');
+                    renderInterestPills();
+                } else {
+                    interestsPillRow.classList.add('hidden');
+                }
+            }
+        };
+
+        const renderInterestPills = () => {
+            if (!interestsPillRow) return;
+            interestsPillRow.innerHTML = `
+                <button onclick="openInterestsModal(false)" class="shrink-0 px-3 py-1 rounded-full text-[11px] font-semibold bg-purple-500/20 text-purple-300 border border-purple-500/40 hover:bg-purple-500/30 transition-all flex items-center gap-1.5 shadow-sm cursor-pointer">
+                    <span>⚙ Gérer</span>
+                    <span class="bg-purple-500/50 text-white rounded-full px-1.5 text-[9px] font-bold">${chaosTags.length}</span>
+                </button>
+                ${chaosTags.map(tag => `
+                    <button onclick="executeSearch('${tag}')" title="Explorer '${tag}'" class="shrink-0 px-2.5 py-1 rounded-full text-[11px] glass text-white/80 border border-white/10 hover:border-purple-400/50 hover:bg-purple-500/15 hover:text-white transition-all cursor-pointer">
+                        #${tag}
+                    </button>
+                `).join('')}
+            `;
+        };
+
+        const updateInterestsBadge = () => {
+            if (interestsBadge) interestsBadge.innerText = chaosTags.length;
+        };
+
+        const openInterestsModal = (fromConfig = false) => {
+            openedFromConfigModal = fromConfig;
+            if (fromConfig) configModal.classList.add('hidden');
+            tagsModal.classList.remove('hidden');
+            renderTags();
         };
 
         btnTrending.onclick = () => { mode = 'trending'; viewDiscover.classList.remove('hidden'); viewVault.classList.add('hidden'); updateNavStyles(btnTrending); fetchTrendingRepos(true); };
         btnRandom.onclick = () => { mode = 'random'; viewDiscover.classList.remove('hidden'); viewVault.classList.add('hidden'); updateNavStyles(btnRandom); fetchTrendingRepos(true); };
+        if (btnInterests) btnInterests.onclick = () => openInterestsModal(false);
         btnVault.onclick = async () => { viewVault.classList.remove('hidden'); viewDiscover.classList.add('hidden'); updateNavStyles(btnVault); await fetchUserStars(); };
         btnSearch.onclick = () => { searchModal.classList.remove('hidden'); document.getElementById('search-input').focus(); };
         
@@ -962,31 +1036,129 @@
                     <span>${tag}</span><button onclick="removeTag('${tag}')" class="text-white/40 hover:text-rose-400 transition-colors">✕</button>
                 </div>
             `).join('');
+            updateInterestsBadge();
         };
-        window.removeTag = (tag) => { chaosTags = chaosTags.filter(t => t !== tag); renderTags(); };
-        document.getElementById('open-tags-btn').onclick = () => { configModal.classList.add('hidden'); tagsModal.classList.remove('hidden'); renderTags(); };
-        document.getElementById('add-tag-btn').onclick = () => { const val = document.getElementById('new-tag-input').value.trim().toLowerCase(); if (val && !chaosTags.includes(val)) { chaosTags.push(val); document.getElementById('new-tag-input').value = ""; renderTags(); } };
-        document.getElementById('reset-tags').onclick = () => { chaosTags = JSON.parse(JSON.stringify(defaultTags)); renderTags(); };
-        document.getElementById('close-tags').onclick = () => { localStorage.setItem('gs_chaos_tags', JSON.stringify(chaosTags)); tagsModal.classList.add('hidden'); configModal.classList.remove('hidden'); showToast("Matrix updated."); };
+
+        window.removeTag = (tag) => { 
+            chaosTags = chaosTags.filter(t => t !== tag); 
+            renderTags(); 
+            localStorage.setItem('gs_chaos_tags', JSON.stringify(chaosTags)); 
+            renderInterestPills(); 
+        };
+
+        document.getElementById('open-tags-btn').onclick = () => openInterestsModal(true);
+
+        document.getElementById('add-tag-btn').onclick = () => { 
+            const val = document.getElementById('new-tag-input').value.trim().toLowerCase().replace(/[^a-z0-9\-_]/g, ''); 
+            if (val && !chaosTags.includes(val)) { 
+                chaosTags.push(val); 
+                document.getElementById('new-tag-input').value = ""; 
+                renderTags(); 
+                localStorage.setItem('gs_chaos_tags', JSON.stringify(chaosTags)); 
+                renderInterestPills(); 
+            } 
+        };
+
+        document.getElementById('reset-tags').onclick = () => { 
+            chaosTags = JSON.parse(JSON.stringify(defaultTags)); 
+            renderTags(); 
+            localStorage.setItem('gs_chaos_tags', JSON.stringify(chaosTags)); 
+            renderInterestPills(); 
+            showToast("Tags par défaut restaurés."); 
+        };
+
+        document.getElementById('close-tags').onclick = () => { 
+            localStorage.setItem('gs_chaos_tags', JSON.stringify(chaosTags)); 
+            tagsModal.classList.add('hidden'); 
+            if (openedFromConfigModal) configModal.classList.remove('hidden'); 
+            showToast("Matrix updated."); 
+            renderInterestPills(); 
+            updateInterestsBadge(); 
+        };
+
+        // Semantic local topic extractor (works 100% offline, 0 API key required)
+        const extractLocalTopics = (sourceList) => {
+            const stopWords = new Set([
+                'the','and','for','with','this','that','from','your','which','using','into','simple','lightweight',
+                'fast','modern','tool','library','framework','built','easy','awesome','project','app','application',
+                'code','free','open','source','official','github','written','based','support','supports','system',
+                'utility','utilities','collection','template','starter','boilerplate'
+            ]);
+            const counts = {};
+            const textPool = sourceList.map(r => `${r.name || ''} ${r.description || ''} ${r.language || ''}`).join(' ').toLowerCase();
+            const tokens = textPool.replace(/[^a-z0-9\-_#+]/g, ' ').split(/\s+/);
+            tokens.forEach(tok => {
+                if (tok.length >= 3 && tok.length <= 20 && !stopWords.has(tok) && !/^\d+$/.test(tok)) {
+                    counts[tok] = (counts[tok] || 0) + 1;
+                }
+            });
+            return Object.entries(counts)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 8)
+                .map(e => e[0]);
+        };
 
         document.getElementById('ai-tags-btn').onclick = async () => {
-            if (!geminiKey) { showToast("API Key missing.", true); configModal.classList.remove('hidden'); tagsModal.classList.add('hidden'); return; }
-            const sourceRepos = ghToken ? remoteStars : localVault;
-            if (sourceRepos.length === 0) { showToast("Vault empty. No data to scan.", true); return; }
-            const btn = document.getElementById('ai-tags-btn'); const originalText = btn.innerHTML; btn.innerHTML = "Scanning Nodes..."; btn.disabled = true;
+            const sourceRepos = (ghToken ? remoteStars : localVault).length > 0 ? (ghToken ? remoteStars : localVault) : repos;
+            if (!sourceRepos || sourceRepos.length === 0) { 
+                showToast("Aucun dépôt disponible pour le scan.", true); 
+                return; 
+            }
+            const btn = document.getElementById('ai-tags-btn'); 
+            const originalText = btn.innerHTML; 
+            btn.innerHTML = `<span class="animate-spin inline-block mr-2">⚙</span> Scanning Nodes...`; 
+            btn.disabled = true;
+
             try {
-                const samples = sourceRepos.slice(0, 30).map(r => `${r.name}: ${r.description || ''}`).join('\n');
-                const prompt = `Analyze these repositories starred by a developer:\n${samples}\nExtract 8 high-level technical topics or keywords (single words, lowercase) that represent their specific interests (e.g. "rust", "neovim", "devops"). Return ONLY a raw JSON array of strings. No markdown.`;
-                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }) });
-                if (!res.ok) throw new Error("API_ERROR");
-                const data = await res.json();
-                const jsonStr = data.candidates?.[0]?.content?.parts?.[0]?.text.replace(/```json|```/g, '').trim();
-                const newTags = JSON.parse(jsonStr);
-                if (Array.isArray(newTags)) {
-                    let addedCount = 0; newTags.forEach(tag => { const t = tag.toLowerCase().trim(); if (t && !chaosTags.includes(t)) { chaosTags.push(t); addedCount++; } });
-                    renderTags(); showToast(`Extracted ${addedCount} new signals.`);
+                let newTags = [];
+                if (geminiKey) {
+                    try {
+                        const samples = sourceRepos.slice(0, 30).map(r => `${r.name}: ${r.description || ''}`).join('\n');
+                        const prompt = `Analyze these repositories starred or discovered by a developer:\n${samples}\nExtract 8 high-level technical topics or keywords (single words, lowercase, e.g. "rust", "neovim", "devops", "wasm", "tailwind"). Return ONLY a raw JSON array of strings: ["topic1", "topic2"].`;
+                        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${geminiModel}:generateContent?key=${geminiKey}`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                        });
+                        if (res.ok) {
+                            const data = await res.json();
+                            const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+                            const match = rawText.match(/\[[\s\S]*?\]/);
+                            if (match) newTags = JSON.parse(match[0]);
+                        }
+                    } catch (err) {
+                        console.warn("Gemini scan error, fallback to local:", err);
+                    }
                 }
-            } catch (e) { showToast("Analysis failed.", true); } finally { btn.innerHTML = originalText; btn.disabled = false; }
+                
+                // Fallback local extractor if Gemini didn't return tags
+                if (!Array.isArray(newTags) || newTags.length === 0) {
+                    newTags = extractLocalTopics(sourceRepos);
+                }
+
+                if (Array.isArray(newTags) && newTags.length > 0) {
+                    let addedCount = 0;
+                    newTags.forEach(tag => {
+                        const t = String(tag).toLowerCase().trim().replace(/[^a-z0-9\-_]/g, '');
+                        if (t && !chaosTags.includes(t)) {
+                            chaosTags.push(t);
+                            addedCount++;
+                        }
+                    });
+                    renderTags();
+                    updateInterestsBadge();
+                    renderInterestPills();
+                    localStorage.setItem('gs_chaos_tags', JSON.stringify(chaosTags));
+                    showToast(addedCount > 0 ? `+${addedCount} signaux ajoutés.` : "Signaux déjà synchronisés.");
+                } else {
+                    showToast("Aucun nouveau signal détecté.");
+                }
+            } catch (e) {
+                showToast("Erreur d'analyse.", true);
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
         };
 
         // --- Analyzer ---
@@ -1007,7 +1179,16 @@
                 const treeRes = await fetchGithub(`https://api.github.com/repos/${repo.owner.login}/${repo.name}/git/trees/${repo.default_branch || 'main'}?recursive=1`);
                 if(!treeRes.ok) throw new Error("REPO_ACCESS_DENIED");
                 const treeData = await treeRes.json();
-                const files = treeData.tree.filter(f => f.type === 'blob' && /\.(js|jsx|ts|tsx|py|html|css|json|md|c|cpp|go|rs|php|java|rb)$/.test(f.path) && !f.path.match(/node_modules|dist|\.git|lock|package-lock/)).slice(0, 150);
+                
+                // Prioritize key architectural files & entry points, limit to 15 files to prevent rate limits
+                const priorityPatterns = /(readme|package\.json|cargo\.toml|go\.mod|pyproject\.toml|pom\.xml|index\.|main\.|app\.|core\.)/i;
+                const codeFiles = treeData.tree.filter(f => f.type === 'blob' && /\.(js|jsx|ts|tsx|py|html|css|json|md|c|cpp|go|rs|php|java|rb)$/.test(f.path) && !f.path.match(/node_modules|dist|\.git|lock|package-lock|vendor|\.min\./));
+                codeFiles.sort((a, b) => {
+                    const aP = priorityPatterns.test(a.path) ? 1 : 0;
+                    const bP = priorityPatterns.test(b.path) ? 1 : 0;
+                    return bP - aP;
+                });
+                const files = codeFiles.slice(0, 15);
                 if(files.length === 0) throw new Error("No readable code found.");
                 
                 document.getElementById('analyzer-status').innerText = `Downloading Blobs (${files.length})...`;
@@ -1015,7 +1196,12 @@
                 let downloadedContent = "";
                 for(let i=0; i<files.length; i+=5) {
                     const batch = files.slice(i, i+5);
-                    const contents = await Promise.all(batch.map(f => fetch(f.url, ghToken ? {headers:{'Authorization':`token ${ghToken}`}} : {}).then(r=>r.json()).then(d => d.content ? `\n-- ${f.path} --\n${new TextDecoder().decode(Uint8Array.from(atob(d.content),c=>c.charCodeAt(0)))}` : "").catch(e=>"")));
+                    const contents = await Promise.all(batch.map(f => fetch(f.url, ghToken ? {headers:{'Authorization':`token ${ghToken}`}} : {}).then(r=>r.json()).then(d => {
+                        if (!d.content) return "";
+                        const cleanB64 = d.content.replace(/\s+/g, '');
+                        const decoded = cleanB64 ? new TextDecoder().decode(Uint8Array.from(atob(cleanB64), c => c.charCodeAt(0))) : "";
+                        return `\n-- ${f.path} --\n${decoded}`;
+                    }).catch(e=>"")));
                     downloadedContent += contents.join("");
                     progress.style.width = `${(i/files.length)*100}%`;
                     document.getElementById('analyzer-details').innerText = `${i}/${files.length} streams merged`;
@@ -1057,6 +1243,25 @@
             chatHistory.push({role, text});
         };
 
+        // --- Keyboard Navigation (Desktop Arrows) ---
+        window.addEventListener('keydown', (e) => {
+            const isEditing = document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA');
+            const isModalOpen = !configModal.classList.contains('hidden') || !searchModal.classList.contains('hidden') || !tagsModal.classList.contains('hidden') || !viewAnalyzer.classList.contains('hidden');
+            if (isEditing || isModalOpen) return;
+            if (viewDiscover.classList.contains('hidden')) return;
+
+            if (e.key === 'ArrowRight') {
+                e.preventDefault();
+                completeSwipe('right');
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                completeSwipe('left');
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                undoLastSwipe();
+            }
+        });
+
         // --- Boot ---
         cardContainer.addEventListener('mousedown', handleStart);
         cardContainer.addEventListener('touchstart', handleStart, { passive: false });
@@ -1065,6 +1270,7 @@
         window.addEventListener('touchmove', handleMove, { passive: false }); 
         window.addEventListener('touchend', handleEnd);
 
+        updateInterestsBadge();
         updateNavStyles(btnTrending);
         fetchUserStars(true).then(() => fetchTrendingRepos());
     </script>
