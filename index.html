@@ -113,8 +113,31 @@
         .markdown-body ul, .markdown-body ol { padding-left: 1.5rem; margin-bottom: 16px; }
         .markdown-body a { color: #38bdf8; text-decoration: none; }
         .markdown-body a:hover { text-decoration: underline; }
-        .markdown-body img { border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); }
+        .markdown-body img { max-width: 100%; height: auto; border-radius: 6px; box-sizing: border-box; }
+        .markdown-body a img, .markdown-body p > img { display: inline-block; vertical-align: middle; border: none; }
         .markdown-body blockquote { border-left: 4px solid #38bdf8; margin: 0; padding-left: 16px; color: rgba(255,255,255,0.6); background: rgba(255,255,255,0.02); padding: 12px 16px; border-radius: 0 12px 12px 0; }
+        .markdown-body table { border-spacing: 0; border-collapse: collapse; display: block; width: max-content; max-width: 100%; overflow: auto; margin: 16px 0; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; }
+        .markdown-body th, .markdown-body td { padding: 8px 14px; border: 1px solid rgba(255, 255, 255, 0.1); font-size: 13px; }
+        .markdown-body th { background: rgba(255, 255, 255, 0.06); font-weight: 600; color: #fff; }
+        .markdown-body tr:nth-child(even) { background: rgba(255, 255, 255, 0.02); }
+        .markdown-body details { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 12px 16px; margin: 12px 0; }
+        .markdown-body summary { cursor: pointer; font-weight: 600; color: #fff; outline: none; }
+
+        /* GitHub Primer Dark syntax tokens */
+        .markdown-body .pl-c { color: #8b949e; font-style: italic; }
+        .markdown-body .pl-c1, .markdown-body .pl-s .pl-v { color: #79c0ff; }
+        .markdown-body .pl-e, .markdown-body .pl-en { color: #d2a8ff; }
+        .markdown-body .pl-smi, .markdown-body .pl-s .pl-s1 { color: #c9d1d9; }
+        .markdown-body .pl-ent { color: #7ee787; }
+        .markdown-body .pl-k { color: #ff7b72; font-weight: 600; }
+        .markdown-body .pl-s, .markdown-body .pl-pds { color: #a5d6ff; }
+        .markdown-body .pl-v { color: #ffa657; }
+        .markdown-body .pl-smw { color: #ffab70; }
+        .markdown-body .pl-bu { color: #f0883e; }
+        .markdown-body .pl-mh, .markdown-body .pl-ms { color: #1f6feb; font-weight: bold; }
+        .markdown-body .pl-mi { color: #c9d1d9; font-style: italic; }
+        .markdown-body .pl-mb { color: #c9d1d9; font-weight: bold; }
+        .markdown-body .pl-corl { text-decoration: underline; color: #a5d6ff; }
         
         /* --- SWIPE CARD SYSTEM --- */
         img, a, .no-select { user-select: none; -webkit-user-drag: none; }
@@ -395,12 +418,112 @@
             return await fetch(url, { method, headers });
         }
 
+        // --- Fallback Data (When Unauthenticated GitHub Rate Limit 403 occurs) ---
+        const FALLBACK_REPOS = [
+            {
+                id: 1440956372,
+                name: "craft-anything",
+                full_name: "storytold/craft-anything",
+                owner: { login: "storytold", avatar_url: "https://avatars.githubusercontent.com/u/76897702?v=4" },
+                html_url: "https://github.com/storytold/craft-anything",
+                description: "Craft Anything: understand how any software works, and craft your own.",
+                stargazers_count: 43800,
+                language: "Rust",
+                updated_at: new Date().toISOString(),
+                default_branch: "main"
+            },
+            {
+                id: 603649168,
+                name: "ui",
+                full_name: "shadcn-ui/ui",
+                owner: { login: "shadcn-ui", avatar_url: "https://avatars.githubusercontent.com/u/139895814?v=4" },
+                html_url: "https://github.com/shadcn-ui/ui",
+                description: "Beautifully designed components that you can copy and paste into your apps. Accessible. Customizable. Open Source.",
+                stargazers_count: 82500,
+                language: "TypeScript",
+                updated_at: new Date().toISOString(),
+                default_branch: "main"
+            },
+            {
+                id: 757827663,
+                name: "uv",
+                full_name: "astral-sh/uv",
+                owner: { login: "astral-sh", avatar_url: "https://avatars.githubusercontent.com/u/115962839?v=4" },
+                html_url: "https://github.com/astral-sh/uv",
+                description: "An extremely fast Python package and project manager, written in Rust.",
+                stargazers_count: 48300,
+                language: "Rust",
+                updated_at: new Date().toISOString(),
+                default_branch: "main"
+            },
+            {
+                id: 366258925,
+                name: "helix",
+                full_name: "helix-editor/helix",
+                owner: { login: "helix-editor", avatar_url: "https://avatars.githubusercontent.com/u/84042850?v=4" },
+                html_url: "https://github.com/helix-editor/helix",
+                description: "A post-modern modal text editor written in Rust.",
+                stargazers_count: 37200,
+                language: "Rust",
+                updated_at: new Date().toISOString(),
+                default_branch: "master"
+            },
+            {
+                id: 341851218,
+                name: "bun",
+                full_name: "oven-sh/bun",
+                owner: { login: "oven-sh", avatar_url: "https://avatars.githubusercontent.com/u/87063261?v=4" },
+                html_url: "https://github.com/oven-sh/bun",
+                description: "Incredibly fast JavaScript runtime, bundler, test runner, and package manager.",
+                stargazers_count: 78500,
+                language: "Zig",
+                updated_at: new Date().toISOString(),
+                default_branch: "main"
+            },
+            {
+                id: 219758784,
+                name: "bubbletea",
+                full_name: "charmbracelet/bubbletea",
+                owner: { login: "charmbracelet", avatar_url: "https://avatars.githubusercontent.com/u/61821422?v=4" },
+                html_url: "https://github.com/charmbracelet/bubbletea",
+                description: "A powerful little TUI framework 🍃",
+                stargazers_count: 27900,
+                language: "Go",
+                updated_at: new Date().toISOString(),
+                default_branch: "master"
+            },
+            {
+                id: 10270250,
+                name: "react",
+                full_name: "facebook/react",
+                owner: { login: "facebook", avatar_url: "https://avatars.githubusercontent.com/u/69631?v=4" },
+                html_url: "https://github.com/facebook/react",
+                description: "The library for web and native user interfaces.",
+                stargazers_count: 232000,
+                language: "JavaScript",
+                updated_at: new Date().toISOString(),
+                default_branch: "main"
+            },
+            {
+                id: 10639145,
+                name: "tailwindcss",
+                full_name: "tailwindlabs/tailwindcss",
+                owner: { login: "tailwindlabs", avatar_url: "https://avatars.githubusercontent.com/u/67104417?v=4" },
+                html_url: "https://github.com/tailwindlabs/tailwindcss",
+                description: "A utility-first CSS framework for rapid UI development.",
+                stargazers_count: 85000,
+                language: "TypeScript",
+                updated_at: new Date().toISOString(),
+                default_branch: "next"
+            }
+        ];
+
         const showToast = (msg, isError = false) => { 
             const toast = document.createElement('div'); 
             toast.className = `fixed bottom-24 left-1/2 -translate-x-1/2 px-6 py-3 rounded-full font-medium text-xs z-[200] backdrop-blur-xl border transition-all ${isError ? 'bg-rose-500/20 border-rose-500/50 text-rose-100 shadow-[0_0_15px_rgba(244,63,94,0.3)]' : 'bg-white/10 border-white/20 text-white shadow-[0_8px_32px_rgba(0,0,0,0.3)]'}`; 
             toast.innerText = msg; 
             document.body.appendChild(toast); 
-            setTimeout(() => { toast.style.opacity = '0'; setTimeout(()=>toast.remove(), 300); }, 2000); 
+            setTimeout(() => { toast.style.opacity = '0'; setTimeout(()=>toast.remove(), 300); }, 2500); 
         };
 
         // --- App Logic ---
@@ -414,13 +537,32 @@
             try {
                 const params = mode === 'random' ? getChaosParams() : getTrendingParams();
                 const res = await fetchGithub(`https://api.github.com/search/repositories?q=${encodeURIComponent(params.q)}&sort=${params.sort}&order=desc&per_page=30&page=${page}`);
-                if (!res.ok) throw new Error(res.status === 403 ? "LIMIT" : "ERR");
+                if (!res.ok) {
+                    if (res.status === 403 && repos.length === 0) {
+                        showToast("Mode Démo (Rate Limit GitHub) — Ajoutez un token dans ⚙️ pour le live");
+                        repos = [...FALLBACK_REPOS];
+                        renderCurrentCard();
+                        return;
+                    }
+                    throw new Error(res.status === 403 ? "LIMIT" : "ERR");
+                }
                 const data = await res.json();
                 const starredIds = new Set((ghToken ? remoteStars : localVault).map(r => r.id));
                 const filtered = data.items.filter(r => !starredIds.has(r.id)).sort(() => mode === 'random' ? Math.random() - 0.5 : 0);
                 repos = [...repos, ...filtered];
+                if (repos.length === 0) {
+                    repos = [...FALLBACK_REPOS];
+                }
                 renderCurrentCard();
-            } catch (err) { showToast(err.message === "LIMIT" ? "API Rate Limit. Add Token." : "Network Error", true); } 
+            } catch (err) {
+                if (repos.length === 0) {
+                    showToast("Mode Démo (Rate Limit GitHub) — Ajoutez un token dans ⚙️ pour le live");
+                    repos = [...FALLBACK_REPOS];
+                    renderCurrentCard();
+                } else {
+                    showToast(err.message === "LIMIT" ? "API Rate Limit. Add Token." : "Network Error", true);
+                }
+            } 
             finally { isLoading = false; }
         }
 
@@ -483,17 +625,113 @@
             return false;
         }
 
+        // --- README Processing & Asset Rewriting ---
+        function processReadmeHtml(html, repo) {
+            if (!html) return '';
+            const branch = (repo && repo.default_branch) ? repo.default_branch : 'main';
+            const owner = repo && repo.owner ? repo.owner.login : '';
+            const repoName = repo ? repo.name : '';
+            if (!owner || !repoName) return html;
+
+            const rawBase = `https://raw.githubusercontent.com/${owner}/${repoName}/${branch}/`;
+            const blobBase = `https://github.com/${owner}/${repoName}/blob/${branch}/`;
+
+            try {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+
+                // 1. Réécriture des images, picture et source
+                doc.querySelectorAll('img, source').forEach(el => {
+                    const src = el.getAttribute('src');
+                    if (src && !/^(https?:|data:|\/\/)/i.test(src)) {
+                        const clean = src.replace(/^(\.\.\/|\.\/|\/)+/, '');
+                        el.setAttribute('src', rawBase + clean);
+                    }
+                    const srcset = el.getAttribute('srcset');
+                    if (srcset) {
+                        const newSrcset = srcset.split(',').map(part => {
+                            const trimmed = part.trim();
+                            const [url, descriptor] = trimmed.split(/\s+/);
+                            if (url && !/^(https?:|data:|\/\/)/i.test(url)) {
+                                const cleanUrl = url.replace(/^(\.\.\/|\.\/|\/)+/, '');
+                                return (rawBase + cleanUrl) + (descriptor ? ' ' + descriptor : '');
+                            }
+                            return trimmed;
+                        }).join(', ');
+                        el.setAttribute('srcset', newSrcset);
+                    }
+                    if (el.tagName.toLowerCase() === 'img') {
+                        el.setAttribute('loading', 'lazy');
+                        el.setAttribute('onerror', 'this.style.opacity="0"; this.style.maxHeight="0";');
+                    }
+                });
+
+                // 2. Réécriture des liens relatifs
+                doc.querySelectorAll('a').forEach(a => {
+                    const href = a.getAttribute('href');
+                    if (href && !/^(https?:|mailto:|#|\/\/)/i.test(href)) {
+                        const clean = href.replace(/^(\.\.\/|\.\/|\/)+/, '');
+                        a.setAttribute('href', blobBase + clean);
+                    }
+                    a.setAttribute('target', '_blank');
+                    a.setAttribute('rel', 'noopener noreferrer');
+                });
+
+                // 3. Wrapper défilement horizontal des tableaux
+                doc.querySelectorAll('table').forEach(table => {
+                    if (!table.parentElement.classList.contains('table-scroll-wrapper')) {
+                        const wrapper = doc.createElement('div');
+                        wrapper.className = 'table-scroll-wrapper overflow-x-auto my-4 max-w-full';
+                        table.parentNode.insertBefore(wrapper, table);
+                        wrapper.appendChild(table);
+                    }
+                });
+
+                return doc.body.innerHTML;
+            } catch (err) {
+                console.warn('Error processing README HTML:', err);
+                return html;
+            }
+        }
+
         async function fetchReadme(repo) {
             if (readmeCache[repo.id] || fetchingIds.has(repo.id)) return;
             fetchingIds.add(repo.id);
             try {
                 const res = await fetchGithub(`https://api.github.com/repos/${repo.owner.login}/${repo.name}/readme`, 'GET', true);
                 if (!res.ok) throw new Error();
-                readmeCache[repo.id] = await res.text();
+                const rawHtml = await res.text();
+                const processed = processReadmeHtml(rawHtml, repo);
+                readmeCache[repo.id] = processed;
                 if (repos[currentIndex] && repos[currentIndex].id === repo.id) {
-                    const box = document.getElementById('readme-box'); if (box) box.innerHTML = readmeCache[repo.id];
+                    const box = document.getElementById('readme-box'); if (box) box.innerHTML = processed;
                 }
-            } catch (e) { readmeCache[repo.id] = `<div class="p-10 border border-white/10 rounded-xl text-center text-white/30 text-xs mt-6">No README provided.</div>`; } 
+            } catch (e) {
+                // Secours 1 : fetch direct du README.md brut sur raw.githubusercontent.com (sans quota API)
+                try {
+                    const branch = repo.default_branch || 'main';
+                    const rawRes = await fetch(`https://raw.githubusercontent.com/${repo.owner.login}/${repo.name}/${branch}/README.md`);
+                    if (rawRes.ok) {
+                        const mdText = await rawRes.text();
+                        if (typeof marked !== 'undefined') {
+                            const parsed = marked.parse(mdText);
+                            const processed = processReadmeHtml(parsed, repo);
+                            readmeCache[repo.id] = processed;
+                            if (repos[currentIndex] && repos[currentIndex].id === repo.id) {
+                                const box = document.getElementById('readme-box');
+                                if (box) box.innerHTML = processed;
+                            }
+                            return;
+                        }
+                    }
+                } catch (fallbackErr) {}
+
+                readmeCache[repo.id] = `<div class="p-10 border border-white/10 rounded-xl text-center text-white/30 text-xs mt-6">README indisponible ou privé.</div>`;
+                if (repos[currentIndex] && repos[currentIndex].id === repo.id) {
+                    const box = document.getElementById('readme-box');
+                    if (box) box.innerHTML = readmeCache[repo.id];
+                }
+            } 
             finally { fetchingIds.delete(repo.id); }
         }
 
